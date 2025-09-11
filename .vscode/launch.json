@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch SineSynth Standalone",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/SineSynth_artefacts/Release/Standalone/SineSynth.app/Contents/MacOS/SineSynth",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "Build Standalone",
+            "console": "integratedTerminal"
+        }
+    ]
+}
