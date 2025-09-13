@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TURBEAUX SOUNDS Audio Workstation - The World's First FFT-Centered Plugin</title>
+    <meta name="description" content="Revolutionary audio plugin with multi-colored EQ visualization and FFT-centered interface. Works with Logic Pro, Ableton Live, Studio One, and more.">
+    <meta name="keywords" content="audio plugin, VST3, Audio Unit, Logic Pro, Ableton Live, EQ visualization, FFT, music production">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://deanturpin.github.io/ts/">
+    <meta property="og:title" content="TURBEAUX SOUNDS Audio Workstation - Revolutionary FFT-Centered Plugin">
+    <meta property="og:description" content="The world's first audio plugin with multi-colored EQ visualization and FFT-centered interface. Universal compatibility: Logic Pro, Live, Studio One, Reaper.">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://deanturpin.github.io/ts/">
+    <meta property="twitter:title" content="TURBEAUX SOUNDS Audio Workstation">
+    <meta property="twitter:description" content="Revolutionary audio plugin with world's first multi-colored EQ visualization">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background: rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #fff;
+            text-align: center;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: 2px;
+        }
+        
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+            color: white;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            background: linear-gradient(45deg, #fff, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 3s ease-in-out infinite;
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .breakthrough {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .download-section {
+            background: white;
+            padding: 4rem 0;
+            margin: 2rem 0;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .download-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .download-btn {
+            display: block;
+            padding: 1.5rem 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+        
+        .download-btn.vst3 {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+        }
+        
+        .download-btn.au {
+            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .feature {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        
+        .feature h3 {
+            color: #4ecdc4;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+        
+        .eq-colors {
+            display: flex;
+            justify-content: space-around;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .color-band {
+            text-align: center;
+            padding: 1rem;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            min-width: 150px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .color-band.red { background: linear-gradient(135deg, #ff416c, #ff4757); }
+        .color-band.orange { background: linear-gradient(135deg, #ff9500, #ff6348); }
+        .color-band.yellow { background: linear-gradient(135deg, #f1c40f, #f39c12); }
+        .color-band.cyan { background: linear-gradient(135deg, #00d2d3, #54a0ff); }
+        .color-band.blue { background: linear-gradient(135deg, #74b9ff, #0984e3); }
+        
+        .daw-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .daw-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .specs {
+            background: rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 2rem 0;
+        }
+        
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        
+        .spec-item {
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid #4ecdc4;
+        }
+        
+        footer {
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+        
+        .github-link {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .github-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .download-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .eq-colors {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">TURBEAUX SOUNDS</div>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>Audio Workstation</h1>
+                <p class="subtitle">The World's First FFT-Centered Audio Plugin</p>
+                
+                <div class="breakthrough">
+                    <h2>🌈 Revolutionary Multi-Colored EQ Visualization</h2>
+                    <p>See every frequency adjustment in real-time with individual band colors!</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="download-section">
+            <div class="container">
+                <h2 style="text-align: center; margin-bottom: 2rem; color: #333;">Download Now - Free</h2>
+                <p style="text-align: center; margin-bottom: 2rem; color: #666;">Universal compatibility • Logic Pro • Ableton Live • Studio One • Reaper</p>
+                
+                <div class="download-buttons">
+                    <a href="https://github.com/deanturpin/ts/releases/latest/download/TURBEAUX_SOUNDS_Audio_Workstation_v1.0.0_macOS_AU.tar.gz" class="download-btn au pulse">
+                        📦 Download Audio Unit (AU)<br>
+                        <small>Logic Pro • GarageBand • MainStage</small>
+                    </a>
+                    <a href="https://github.com/deanturpin/ts/releases" class="download-btn vst3 pulse">
+                        🎵 Download VST3<br>
+                        <small>Live • Studio One • Reaper • Cubase</small>
+                    </a>
+                </div>
+                
+                <p style="text-align: center; margin-top: 1rem; color: #888;">
+                    macOS 10.13+ • Intel & Apple Silicon • Installation guide included
+                </p>
+            </div>
+        </section>
+
+        <section style="color: white;">
+            <div class="container">
+                <h2 style="text-align: center; margin-bottom: 3rem;">Revolutionary Features</h2>
+                
+                <div class="features">
+                    <div class="feature">
+                        <h3>🎨 Multi-Colored EQ (Industry First!)</h3>
+                        <p>Each EQ band displays in its own color on the spectrum analyzer. Watch your adjustments come alive with instant visual feedback!</p>
+                    </div>
+                    
+                    <div class="feature">
+                        <h3>📊 FFT-Centered Interface</h3>
+                        <p>Large real-time spectrum analyzer dominates the interface. See your music's frequency content with professional accuracy.</p>
+                    </div>
+                    
+                    <div class="feature">
+                        <h3>🎹 Complete Workstation</h3>
+                        <p>4-voice polyphonic synthesis, 5-band parametric EQ, built-in MIDI generation, and intelligent randomization.</p>
+                    </div>
+                    
+                    <div class="feature">
+                        <h3>🌍 Universal Compatibility</h3>
+                        <p>Both Audio Unit and VST3 formats included. Works with Logic Pro, Ableton Live, Studio One, Reaper, and more.</p>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin: 3rem 0;">
+                    <h3>EQ Band Color System</h3>
+                    <div class="eq-colors">
+                        <div class="color-band red">Red<br><small>Low Shelf</small></div>
+                        <div class="color-band orange">Orange<br><small>Peak 1</small></div>
+                        <div class="color-band yellow">Yellow<br><small>Peak 2</small></div>
+                        <div class="color-band cyan">Cyan<br><small>Peak 3</small></div>
+                        <div class="color-band blue">Light Blue<br><small>High Shelf</small></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section style="background: white; padding: 4rem 0; margin: 2rem 0; border-radius: 20px;">
+            <div class="container">
+                <h2 style="text-align: center; margin-bottom: 2rem; color: #333;">DAW Compatibility</h2>
+                
+                <div class="daw-grid" style="color: #333;">
+                    <div class="daw-item" style="background: rgba(0,0,0,0.05); color: #333;">
+                        <strong>Logic Pro</strong><br>
+                        Audio Unit ✅
+                    </div>
+                    <div class="daw-item" style="background: rgba(0,0,0,0.05); color: #333;">
+                        <strong>Ableton Live</strong><br>
+                        VST3 ✅
+                    </div>
+                    <div class="daw-item" style="background: rgba(0,0,0,0.05); color: #333;">
+                        <strong>Studio One</strong><br>
+                        VST3 ✅
+                    </div>
+                    <div class="daw-item" style="background: rgba(0,0,0,0.05); color: #333;">
+                        <strong>Reaper</strong><br>
+                        VST3 ✅
+                    </div>
+                    <div class="daw-item" style="background: rgba(0,0,0,0.05); color: #333;">
+                        <strong>Cubase</strong><br>
+                        VST3 ✅
+                    </div>
+                    <div class="daw-item" style="background: rgba(0,0,0,0.05); color: #333;">
+                        <strong>GarageBand</strong><br>
+                        Audio Unit ✅
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section style="color: white;">
+            <div class="container">
+                <div class="specs">
+                    <h2 style="text-align: center; margin-bottom: 2rem;">Technical Specifications</h2>
+                    <div class="specs-grid">
+                        <div class="spec-item">
+                            <strong>Formats:</strong><br>
+                            Audio Unit (AU) + VST3
+                        </div>
+                        <div class="spec-item">
+                            <strong>Synthesis:</strong><br>
+                            4-voice polyphonic sine waves
+                        </div>
+                        <div class="spec-item">
+                            <strong>EQ:</strong><br>
+                            5-band parametric with color visualization
+                        </div>
+                        <div class="spec-item">
+                            <strong>FFT:</strong><br>
+                            1024-point real-time analysis (30fps)
+                        </div>
+                        <div class="spec-item">
+                            <strong>MIDI:</strong><br>
+                            7 musical modes, 5 pattern types
+                        </div>
+                        <div class="spec-item">
+                            <strong>Platform:</strong><br>
+                            macOS 10.13+ (Intel + Apple Silicon)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 TURBEAUX SOUNDS Audio Workstation</p>
+            <p>Built with JUCE • Developed with Claude Code • Made with ❤️ for music producers</p>
+            <a href="https://github.com/deanturpin/ts" class="github-link">
+                View on GitHub • Source Code • Issues & Support
+            </a>
+            <p style="margin-top: 1rem; opacity: 0.7;">
+                The world's first FFT-centered audio plugin with multi-colored EQ visualization
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Add smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Add hover effects to feature cards
+        document.querySelectorAll('.feature').forEach(feature => {
+            feature.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+                this.style.transition = 'all 0.3s ease';
+            });
+            
+            feature.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Add click tracking for downloads
+        document.querySelectorAll('.download-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Track download analytics here if needed
+                console.log('Download clicked:', this.textContent);
+            });
+        });
+    </script>
+</body>
+</html>
