@@ -165,17 +165,21 @@ target_compile_definitions(ParametricEQ PUBLIC
 
 # Create integrated Audio Workstation
 juce_add_plugin(AudioWorkstation
-    COMPANY_NAME "YourCompany"
-    PLUGIN_MANUFACTURER_CODE Yrcm
-    PLUGIN_CODE AuWk
-    FORMATS Standalone
-    PRODUCT_NAME "Audio Workstation"
+    COMPANY_NAME "Turbeaux Sounds"
+    PLUGIN_MANUFACTURER_CODE Trbo
+    PLUGIN_CODE TrWk
+    FORMATS AU VST3 Standalone
+    PRODUCT_NAME "TURBEAUX SOUNDS Audio Workstation"
+    BUNDLE_ID com.turbeaux.audioworkstation
     IS_SYNTH TRUE
     NEEDS_MIDI_INPUT TRUE
     NEEDS_MIDI_OUTPUT FALSE
     IS_MIDI_EFFECT FALSE
     EDITOR_WANTS_KEYBOARD_FOCUS FALSE
-    COPY_PLUGIN_AFTER_BUILD FALSE
+    COPY_PLUGIN_AFTER_BUILD TRUE
+    PLUGIN_VERSION "1.0.0"
+    DESCRIPTION "FFT-Centered Audio Workstation with Multi-Colored EQ Visualization"
+    PLUGIN_CHARACTERISTICS "Instrument;Multi-Timbral"
 )
 
 target_sources(AudioWorkstation PRIVATE
@@ -205,18 +209,35 @@ target_link_libraries(AudioWorkstation PRIVATE
 target_compile_definitions(AudioWorkstation PUBLIC
     JUCE_WEB_BROWSER=0
     JUCE_USE_CURL=0
+    JUCE_VST3_CAN_REPLACE_VST2=1
 )
 
 # Install targets
 if(APPLE)
-    # Install AU plugin to the correct location
+    # Install AU plugins to the correct location
     install(TARGETS SineSynth_AU
         DESTINATION "$ENV{HOME}/Library/Audio/Plug-Ins/Components"
         OPTIONAL
     )
     
-    # Install standalone app
+    install(TARGETS AudioWorkstation_AU
+        DESTINATION "$ENV{HOME}/Library/Audio/Plug-Ins/Components"
+        OPTIONAL
+    )
+    
+    # Install VST3 plugins
+    install(TARGETS AudioWorkstation_VST3
+        DESTINATION "$ENV{HOME}/Library/Audio/Plug-Ins/VST3"
+        OPTIONAL
+    )
+    
+    # Install standalone apps
     install(TARGETS SineSynth_Standalone
+        DESTINATION "/Applications"
+        OPTIONAL
+    )
+    
+    install(TARGETS AudioWorkstation_Standalone
         DESTINATION "/Applications"
         OPTIONAL
     )
