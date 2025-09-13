@@ -45,12 +45,21 @@ plugin: configure
 	@echo "🏗️  Building Audio Unit plugin (using $(NPROC) cores)..."
 	@cd $(BUILD_DIR) && cmake --build . --target SineSynth_AU --config $(BUILD_CONFIG) -j$(NPROC)
 
-# Install AU plugin to Logic Pro location
-install: plugin
+# Install AU and VST3 plugins to system locations
+install: configure
+	@echo "📦 Building and installing TURBEAUX SOUNDS Audio Workstation plugins..."
+	@echo "🏗️  Building Audio Unit and VST3 plugins (using $(NPROC) cores)..."
+	@cd $(BUILD_DIR) && cmake --build . --target AudioWorkstation_AU --config $(BUILD_CONFIG) -j$(NPROC)
+	@cd $(BUILD_DIR) && cmake --build . --target AudioWorkstation_VST3 --config $(BUILD_CONFIG) -j$(NPROC)
 	@echo "📦 Installing Audio Unit plugin..."
-	@cd $(BUILD_DIR) && cmake --install . --component SineSynth_AU
-	@echo "✅ SineSynth.component installed to ~/Library/Audio/Plug-Ins/Components/"
-	@echo "   Restart Logic Pro to see the plugin"
+	@cp -R "$(BUILD_DIR)/AudioWorkstation_artefacts/$(BUILD_CONFIG)/AU/TURBEAUX SOUNDS Audio Workstation.component" ~/Library/Audio/Plug-Ins/Components/
+	@echo "📦 Installing VST3 plugin..."
+	@mkdir -p ~/Library/Audio/Plug-Ins/VST3/
+	@cp -R "$(BUILD_DIR)/AudioWorkstation_artefacts/$(BUILD_CONFIG)/VST3/TURBEAUX SOUNDS Audio Workstation.vst3" ~/Library/Audio/Plug-Ins/VST3/
+	@echo "✅ TURBEAUX SOUNDS Audio Workstation installed:"
+	@echo "   • Audio Unit → ~/Library/Audio/Plug-Ins/Components/"
+	@echo "   • VST3 → ~/Library/Audio/Plug-Ins/VST3/"
+	@echo "   Restart your DAW to see the plugins"
 
 # Build MIDI injector tool
 midi-injector: configure
@@ -137,7 +146,7 @@ help:
 	@echo "  make check-prereqs - Check all prerequisites are installed"
 	@echo "  make standalone   - Build standalone app only"
 	@echo "  make plugin       - Build Audio Unit plugin only"
-	@echo "  make install      - Build and install AU plugin to Logic Pro"
+	@echo "  make install      - Build and install TURBEAUX SOUNDS (AU + VST3) to system"
 	@echo "  make test         - Build and launch standalone app"
 	@echo "  make midi-injector - Build MIDI injector tool"
 	@echo "  make eq           - Build Parametric EQ for audio analysis"
