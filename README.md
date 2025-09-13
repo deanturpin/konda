@@ -5,6 +5,7 @@ A complete audio production and analysis toolkit featuring an enhanced polyphoni
 ## Tools Included
 
 ### 1. Enhanced SineSynth
+
 - 4-voice polyphony
 - MIDI note input with proper frequency calculation
 - ADSR envelope (Attack, Decay, Sustain, Release)
@@ -13,12 +14,14 @@ A complete audio production and analysis toolkit featuring an enhanced polyphoni
 - Available as Logic Pro Audio Unit plugin and standalone app
 
 ### 2. Parametric EQ (NEW)
+
 - Professional 5-band equalizer for audio analysis
 - Low shelf, 3 parametric peaks, high shelf
 - Real-time frequency response visualization
 - Perfect for analyzing synthesizer output characteristics
 
 ### 3. MIDI Injector (NEW)
+
 - Automated MIDI pattern generator for testing
 - Plays C major scale patterns and chord progressions
 - Virtual MIDI device creation
