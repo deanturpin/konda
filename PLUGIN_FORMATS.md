@@ -2,7 +2,7 @@
 
 ## DAW Compatibility Matrix
 
-```
+```text
 macOS:
 ├── Audio Unit (AU) ←─ Native Apple format
 │   ├── Logic Pro ✓
@@ -59,25 +59,31 @@ Web Browsers:
     └── Opera ✓
 ```
 
-## Format Priority for Distribution:
+## Format Priority for Distribution
+
 1. **WebAssembly**: Universal access - no installation, instant demos, mobile support
 2. **VST3**: Universal plugin compatibility (Windows/macOS/Linux)
 3. **Audio Unit**: Essential for Logic Pro users (macOS only)  
 4. **AAX**: Pro Tools access but requires expensive PACE licensing
 5. **CLAP**: Future-proof open standard, growing adoption
 
-## Current Status:
-- ✅ **Audio Unit (AU)**: Built and ready for Logic Pro/GarageBand
-- ⚠️ **VST3**: Build error - parameter automation conflict (fixing)
-- 🔄 **WebAssembly**: Planned for universal browser access
-- 📋 **Windows/Linux**: Planned for cross-platform distribution
+## Current Status
 
-## Installation:
+- ✅ **Audio Unit (AU)**: Built and ready for Logic Pro/GarageBand
+- ✅ **VST3**: Built and ready for universal DAW compatibility
+- ✅ **Web Audio API**: Native browser version with full feature parity
+- 🔄 **WebAssembly**: JUCE port (experimental, compatibility issues)
+- 📋 **Windows/Linux**: VST3 cross-compilation planned
+
+## Installation
+
 - **macOS AU**: Copy `.component` file to `~/Library/Audio/Plug-Ins/Components/`
 - **VST3**: Copy `.vst3` file to `~/Library/Audio/Plug-Ins/VST3/`
+- **Web Audio**: Visit [deanturpin.github.io/ts/web](https://deanturpin.github.io/ts/web) - no installation required
 - **Standalone**: Runs as independent application
 
 The TURBEAUX SOUNDS Audio Workstation combines:
+
 - **FFT-Centered Visual Design**: Real-time spectrum analysis as primary interface
 - **Multi-Colored EQ Visualization**: Individual band color coding for instant parameter understanding
 - **Professional Synthesis**: 4-voice polyphonic engine with ADSR, filter, and effects
