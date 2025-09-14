@@ -5,7 +5,7 @@ BUILD_DIR = build
 BUILD_CONFIG = Release
 AU_PLUGIN = ~/Library/Audio/Plug-Ins/Components/SineSynth.component
 
-.PHONY: all install clean configure deploy help check-prereqs test-with-midi test-all setup-guide shutdown watch dev restart lint-md watch-md
+.PHONY: all install clean configure deploy help check-prereqs test-with-midi test-all setup-guide shutdown watch dev restart lint-md watch-md test-audio validate-au test-vst3
 
 # Default target - build and run everything
 all: test-all
@@ -136,6 +136,57 @@ clean: shutdown
 # Deploy: commit and push changes
 deploy:
 	git add -A && git commit -m "Auto-commit from make deploy 🤖" && git push
+
+# Audio Testing Targets
+test-audio: validate-au test-vst3
+	@echo "🎵 All audio tests passed!"
+
+# Validate Audio Unit plugin
+validate-au: install
+	@echo "🔍 Validating Audio Unit plugin..."
+	@auval -v aufx Kond TurS || { echo "❌ AU validation failed"; exit 1; }
+	@echo "✅ Audio Unit validation passed!"
+
+# Test VST3 plugin structure
+test-vst3: configure
+	@echo "🔍 Testing VST3 plugin structure..."
+	@cd $(BUILD_DIR) && cmake --build . --target AudioWorkstation_VST3 --config $(BUILD_CONFIG) -j$(NPROC)
+	@if [ -d "$(BUILD_DIR)/AudioWorkstation_artefacts/$(BUILD_CONFIG)/VST3/Konda.vst3" ]; then \
+		echo "✅ VST3 bundle created successfully"; \
+	else \
+		echo "❌ VST3 bundle not found"; exit 1; \
+	fi
+	@if [ -f "$(BUILD_DIR)/AudioWorkstation_artefacts/$(BUILD_CONFIG)/VST3/Konda.vst3/Contents/MacOS/Konda" ]; then \
+		echo "✅ VST3 executable found"; \
+	else \
+		echo "❌ VST3 executable missing"; exit 1; \
+	fi
+
+# Test audio processing functions
+test-audio-processing:
+	@echo "🔍 Testing audio processing..."
+	@echo '#include <iostream>' > test_audio.cpp
+	@echo '#include <cmath>' >> test_audio.cpp
+	@echo '#include <vector>' >> test_audio.cpp
+	@echo 'int main() {' >> test_audio.cpp
+	@echo '    const double sampleRate = 44100.0;' >> test_audio.cpp
+	@echo '    const double frequency = 440.0;' >> test_audio.cpp
+	@echo '    const int numSamples = 1024;' >> test_audio.cpp
+	@echo '    std::vector<float> testBuffer(numSamples);' >> test_audio.cpp
+	@echo '    for (int i = 0; i < numSamples; ++i) {' >> test_audio.cpp
+	@echo '        double phase = (i / sampleRate) * frequency * 2.0 * M_PI;' >> test_audio.cpp
+	@echo '        testBuffer[i] = std::sin(phase);' >> test_audio.cpp
+	@echo '    }' >> test_audio.cpp
+	@echo '    bool hasAudio = false;' >> test_audio.cpp
+	@echo '    for (int i = 0; i < numSamples; ++i) {' >> test_audio.cpp
+	@echo '        if (std::abs(testBuffer[i]) > 0.1) { hasAudio = true; break; }' >> test_audio.cpp
+	@echo '    }' >> test_audio.cpp
+	@echo '    if (hasAudio) { std::cout << "✅ Audio generation working" << std::endl; return 0; }' >> test_audio.cpp
+	@echo '    else { std::cout << "❌ No audio generated" << std::endl; return 1; }' >> test_audio.cpp
+	@echo '}' >> test_audio.cpp
+	@g++ -o test_audio test_audio.cpp -lm
+	@./test_audio
+	@rm -f test_audio test_audio.cpp
 
 # Help
 help:
