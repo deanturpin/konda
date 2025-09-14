@@ -69,15 +69,43 @@ class KondaUI {
         });
 
         // Create black keys with proper positioning
-        blackKeyInfo.forEach((blackKey) => {
-            const key = this.createKey(blackKey.note + '4', blackKey.midi, 'black');
-            key.style.position = 'absolute';
-            // White key width (40px) + gap (2px) = 42px total spacing
-            // Black key width (25px) / 2 = 12.5px offset from center
-            key.style.left = `${(blackKey.position * 42) - 12.5}px`;
-            key.style.zIndex = '10';
-            keyboard.appendChild(key);
-        });
+        // Need to position after white keys are rendered to get accurate positions
+        setTimeout(() => {
+            blackKeyInfo.forEach((blackKey, index) => {
+                const key = this.createKey(blackKey.note + '4', blackKey.midi, 'black');
+                key.style.position = 'absolute';
+                key.style.top = '0';
+
+                // Calculate position based on which white keys this black key sits between
+                const whiteKeyWidth = 40; // CSS defined width
+                const gap = 2; // CSS defined gap
+                const blackKeyWidth = 25; // CSS defined width
+
+                // Position black key centered between the appropriate white keys
+                let leftPosition;
+                switch(blackKey.note) {
+                    case 'C#': // Between C (0) and D (1)
+                        leftPosition = (whiteKeyWidth + gap/2) - (blackKeyWidth/2);
+                        break;
+                    case 'D#': // Between D (1) and E (2)
+                        leftPosition = (whiteKeyWidth + gap) * 2 + (gap/2) - (blackKeyWidth/2);
+                        break;
+                    case 'F#': // Between F (3) and G (4)
+                        leftPosition = (whiteKeyWidth + gap) * 3 + (whiteKeyWidth + gap/2) - (blackKeyWidth/2);
+                        break;
+                    case 'G#': // Between G (4) and A (5)
+                        leftPosition = (whiteKeyWidth + gap) * 4 + (whiteKeyWidth + gap/2) - (blackKeyWidth/2);
+                        break;
+                    case 'A#': // Between A (5) and B (6)
+                        leftPosition = (whiteKeyWidth + gap) * 5 + (whiteKeyWidth + gap/2) - (blackKeyWidth/2);
+                        break;
+                }
+
+                key.style.left = `${leftPosition}px`;
+                key.style.zIndex = '10';
+                keyboard.appendChild(key);
+            });
+        }, 0);
 
         this.keyboard = keyboard;
     }
