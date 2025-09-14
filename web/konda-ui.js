@@ -44,44 +44,51 @@ class KondaUI {
 
     setupVirtualKeyboard() {
         const keyboard = document.getElementById('keyboard');
-        keyboard.style.position = 'relative'; // Ensure relative positioning for absolute children
-        keyboard.style.display = 'flex'; // Ensure flex layout for white keys
-        keyboard.style.justifyContent = 'center';
-        keyboard.style.gap = '2px'; // Match CSS gap
+        keyboard.innerHTML = ''; // Clear existing content
+        keyboard.style.position = 'relative';
+        keyboard.style.display = 'inline-block';
+        keyboard.style.background = '#333';
+        keyboard.style.padding = '10px';
+        keyboard.style.borderRadius = '8px';
 
-        // Create octave of keys (C4 to B4)
-        const whiteKeys = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
-        const blackKeyInfo = [
-            { note: 'C#', midi: 61, position: 0.5 },  // Between C and D
-            { note: 'D#', midi: 63, position: 1.5 },  // Between D and E
-            { note: 'F#', midi: 66, position: 3.5 },  // Between F and G
-            { note: 'G#', midi: 68, position: 4.5 },  // Between G and A
-            { note: 'A#', midi: 70, position: 5.5 }   // Between A and B
+        // Create keyboard container with proper width
+        const keyboardWidth = 7 * 42; // 7 white keys * 42px each
+        keyboard.style.width = `${keyboardWidth}px`;
+        keyboard.style.height = '130px';
+
+        // Create white keys first
+        const whiteKeys = [
+            { note: 'C4', midi: 60, x: 0 },
+            { note: 'D4', midi: 62, x: 42 },
+            { note: 'E4', midi: 64, x: 84 },
+            { note: 'F4', midi: 65, x: 126 },
+            { note: 'G4', midi: 67, x: 168 },
+            { note: 'A4', midi: 69, x: 210 },
+            { note: 'B4', midi: 71, x: 252 }
         ];
 
-        let midiNote = 60; // C4
-
-        // Create white keys first (C, D, E, F, G, A, B = MIDI notes 60, 62, 64, 65, 67, 69, 71)
-        const whiteMidiNotes = [60, 62, 64, 65, 67, 69, 71];
-        whiteKeys.forEach((note, index) => {
-            const key = this.createKey(note + '4', whiteMidiNotes[index], 'white');
+        whiteKeys.forEach(keyInfo => {
+            const key = this.createKey(keyInfo.note, keyInfo.midi, 'white');
+            key.style.position = 'absolute';
+            key.style.left = `${keyInfo.x}px`;
+            key.style.top = '0px';
             keyboard.appendChild(key);
         });
 
-        // Add black keys positioned between white keys
-        const blackKeyPositions = [
-            { note: 'C#', afterWhiteKey: 0 }, // After C
-            { note: 'D#', afterWhiteKey: 1 }, // After D
-            { note: 'F#', afterWhiteKey: 3 }, // After F
-            { note: 'G#', afterWhiteKey: 4 }, // After G
-            { note: 'A#', afterWhiteKey: 5 }  // After A
+        // Create black keys
+        const blackKeys = [
+            { note: 'C#4', midi: 61, x: 30 },  // Between C and D
+            { note: 'D#4', midi: 63, x: 72 },  // Between D and E
+            { note: 'F#4', midi: 66, x: 156 }, // Between F and G
+            { note: 'G#4', midi: 68, x: 198 }, // Between G and A
+            { note: 'A#4', midi: 70, x: 240 }  // Between A and B
         ];
 
-        blackKeyPositions.forEach((blackKeyPos, index) => {
-            const key = this.createKey(blackKeyPos.note + '4', blackKeyInfo[index].midi, 'black');
+        blackKeys.forEach(keyInfo => {
+            const key = this.createKey(keyInfo.note, keyInfo.midi, 'black');
             key.style.position = 'absolute';
-            key.style.left = `${(blackKeyPos.afterWhiteKey * 42) + 21 - 12.5}px`; // 42px per white key, 21px offset, -12.5px to center 25px black key
-            key.style.top = '0';
+            key.style.left = `${keyInfo.x}px`;
+            key.style.top = '0px';
             key.style.zIndex = '10';
             keyboard.appendChild(key);
         });
