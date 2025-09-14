@@ -74,8 +74,6 @@ WorkstationEditor::WorkstationEditor(WorkstationProcessor& p) : juce::AudioProce
     setupSlider(reverbWetLevelSlider, reverbWetLevelLabel, "Wet Level", "reverbWetLevel");
     setupSlider(reverbDryLevelSlider, reverbDryLevelLabel, "Dry Level", "reverbDryLevel");
     
-    // Tempo control
-    setupSlider(tempoSlider, tempoLabel, "Tempo", "tempo");
     
     // Create visualizer and MIDI pattern components
     eqVisualizer = std::make_unique<EQVisualizerComponent>(processor);
@@ -296,11 +294,6 @@ void WorkstationEditor::resized()
     
     rightStrip.removeFromTop(10); // Section spacing
     
-    // Tempo control
-    auto tempoRow = rightStrip.removeFromTop(sliderHeight);
-    tempoLabel.setText("Tempo", juce::dontSendNotification);
-    tempoLabel.setBounds(tempoRow.removeFromLeft(labelWidth));
-    tempoSlider.setBounds(tempoRow.reduced(2, 0));
     
     bounds.removeFromRight(10); // Spacing
     

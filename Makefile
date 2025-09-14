@@ -5,7 +5,7 @@ BUILD_DIR = build
 BUILD_CONFIG = Release
 AU_PLUGIN = ~/Library/Audio/Plug-Ins/Components/SineSynth.component
 
-.PHONY: all install clean configure deploy help check-prereqs test-with-midi test-all setup-guide shutdown watch dev restart
+.PHONY: all install clean configure deploy help check-prereqs test-with-midi test-all setup-guide shutdown watch dev restart lint-md watch-md
 
 # Default target - build and run everything
 all: test-all
@@ -160,6 +160,8 @@ help:
 	@echo "  make restart      - Quick shutdown, rebuild, and restart"
 	@echo "  make dev          - Development mode with auto-rebuild on file changes"
 	@echo "  make watch        - Watch files and rebuild on changes"
+	@echo "  make lint-md      - Lint all markdown files"
+	@echo "  make watch-md     - Watch markdown files and auto-lint on changes"
 	@echo ""
 	@echo "Prerequisites:"
 	@echo "  - CMake: brew install cmake"
@@ -255,3 +257,26 @@ watch:
 		$(MAKE) test-all; \
 		echo "✅ Ready for next change..."; \
 	done
+
+# Lint markdown files
+lint-md:
+	@echo "📝 Linting markdown files..."
+	@command -v markdownlint >/dev/null 2>&1 || { echo "❌ markdownlint not found. Install with: brew install markdownlint-cli"; exit 1; }
+	@markdownlint *.md docs/*.md || true
+
+# Watch markdown files and lint on changes
+watch-md:
+	@echo "👀 Watching markdown files for changes..."
+	@echo "Install fswatch if needed: brew install fswatch"
+	@if command -v fswatch >/dev/null 2>&1; then \
+		echo "   Will auto-lint markdown files when changed"; \
+		echo "   Press Ctrl+C to stop"; \
+		fswatch -e ".*" -i ".*\.md$$" . | while read file; do \
+			echo "📝 Markdown changed: $$file"; \
+			$(MAKE) lint-md; \
+			echo "✅ Linting complete..."; \
+		done; \
+	else \
+		echo "❌ fswatch required for watching. Install with: brew install fswatch"; \
+		exit 1; \
+	fi

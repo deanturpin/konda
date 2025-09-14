@@ -34,8 +34,6 @@ WorkstationProcessor::WorkstationProcessor()
           std::make_unique<juce::AudioParameterFloat>("reverbWetLevel", "Reverb Wet Level", 0.0f, 1.0f, 0.2f),
           std::make_unique<juce::AudioParameterFloat>("reverbDryLevel", "Reverb Dry Level", 0.0f, 1.0f, 0.8f),
           
-          // Tempo parameter (BPM)
-          std::make_unique<juce::AudioParameterFloat>("tempo", "Tempo", 60.0f, 200.0f, 120.0f),
       })
       , forwardFFT(fftOrder)
 {
@@ -550,11 +548,30 @@ void WorkstationProcessor::generateMIDIPattern(juce::MidiBuffer& midiBuffer, int
                 }
             }
             
-            // Calculate samples per note based on tempo (BPM)
-            float tempo = valueTreeState.getRawParameterValue("tempo")->load();
-            float notesPerSecond = tempo / 60.0f * 2.0f; // 2 notes per beat (eighth notes)
-            int dynamicSamplesPerNote = (int)(currentSampleRate / notesPerSecond);
-            samplesUntilNextNote = dynamicSamplesPerNote;
+            // Sync to host tempo (Logic Pro, etc.) or use fixed tempo for standalone
+            auto playHead = getPlayHead();
+            if (playHead != nullptr)
+            {
+                auto positionInfo = playHead->getPosition();
+                if (positionInfo.hasValue() && positionInfo->getBpm().hasValue())
+                {
+                    // Use host BPM for perfect sync with Logic Pro
+                    double hostBpm = *positionInfo->getBpm();
+                    double notesPerSecond = hostBpm / 60.0 * 2.0; // 2 notes per beat (eighth notes)
+                    int hostSyncedSamples = (int)(currentSampleRate / notesPerSecond);
+                    samplesUntilNextNote = hostSyncedSamples;
+                }
+                else
+                {
+                    // Fallback to fixed tempo if host info unavailable
+                    samplesUntilNextNote = samplesPerNote;
+                }
+            }
+            else
+            {
+                // Standalone mode - use fixed tempo
+                samplesUntilNextNote = samplesPerNote;
+            }
             patternIndex++;
         }
         

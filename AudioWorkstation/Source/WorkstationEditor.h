@@ -1,14 +1,15 @@
 #pragma once
+#define JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED 1
+#include "../../../juce_wasm/modules/juce_gui_basics/juce_gui_basics.h"
+#include "../../../juce_wasm/modules/juce_audio_devices/juce_audio_devices.h"
 #include "WorkstationProcessor.h"
-#include <juce_gui_basics/juce_gui_basics.h>
-#include <juce_audio_devices/juce_audio_devices.h>
 
 class EQVisualizerComponent : public juce::Component, public juce::Timer
 {
 public:
     EQVisualizerComponent(WorkstationProcessor& p) : processor(p)
     {
-        startTimer(30); // 30fps updates
+        startTimer(60); // 15fps updates (60ms interval)
         generateRandomColours(); // Start with random colours
     }
     
@@ -448,9 +449,6 @@ private:
     juce::Slider reverbRoomSizeSlider, reverbDampingSlider, reverbWetLevelSlider, reverbDryLevelSlider;
     juce::Label reverbRoomSizeLabel, reverbDampingLabel, reverbWetLevelLabel, reverbDryLevelLabel;
     
-    // Tempo control
-    juce::Slider tempoSlider;
-    juce::Label tempoLabel;
     
     // Visualizer and MIDI
     std::unique_ptr<EQVisualizerComponent> eqVisualizer;

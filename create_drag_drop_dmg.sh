@@ -5,7 +5,7 @@
 
 set -e
 
-VERSION="1.2.1"
+VERSION="1.2.2"
 APP_NAME="Konda"
 DMG_NAME="Konda_v${VERSION}_Installer"
 TEMP_DMG="temp_${DMG_NAME}.dmg"
@@ -33,7 +33,7 @@ ln -s ~/Library/Audio/Plug-Ins/VST3 "dmg_temp/VST3 Folder"
 
 # Create README
 cat > dmg_temp/README.txt << 'README'
-Konda v1.2.1 - Installation Instructions
+Konda v1.2.2 - Installation Instructions
 ========================================
 
 QUICK INSTALL:
@@ -41,9 +41,10 @@ QUICK INSTALL:
 2. Drag "Konda.vst3" to "VST3 Folder"
 3. Restart your DAW
 
-WHAT'S NEW IN v1.2.1:
+WHAT'S NEW IN v1.2.2:
+• Professional drag & drop installer
 • Streamlined 4-band parametric EQ
-• Updated color visualization
+• Enhanced audio input handling
 • Improved interface layout
 
 FEATURES:

@@ -1,8 +1,9 @@
 #pragma once
-#include <juce_audio_processors/juce_audio_processors.h>
-#include <juce_dsp/juce_dsp.h>
-#include "../../../Source/SineWaveVoice.h"
-#include "../../../Source/SineWaveSound.h"
+#define JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED 1
+#include "../../../juce_wasm/modules/juce_audio_processors/juce_audio_processors.h"
+#include "../../../juce_wasm/modules/juce_dsp/juce_dsp.h"
+#include "SineWaveVoice.h"
+#include "SineWaveSound.h"
 
 class WorkstationProcessor : public juce::AudioProcessor
 {
