@@ -45,6 +45,9 @@ class KondaUI {
     setupVirtualKeyboard() {
         const keyboard = document.getElementById('keyboard');
         keyboard.style.position = 'relative'; // Ensure relative positioning for absolute children
+        keyboard.style.display = 'flex'; // Ensure flex layout for white keys
+        keyboard.style.justifyContent = 'center';
+        keyboard.style.gap = '2px'; // Match CSS gap
 
         // Create octave of keys (C4 to B4)
         const whiteKeys = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
@@ -69,7 +72,9 @@ class KondaUI {
         blackKeyInfo.forEach((blackKey) => {
             const key = this.createKey(blackKey.note + '4', blackKey.midi, 'black');
             key.style.position = 'absolute';
-            key.style.left = `${(blackKey.position * 40) - 12.5}px`; // 40px matches CSS white key width
+            // White key width (40px) + gap (2px) = 42px total spacing
+            // Black key width (25px) / 2 = 12.5px offset from center
+            key.style.left = `${(blackKey.position * 42) - 12.5}px`;
             key.style.zIndex = '10';
             keyboard.appendChild(key);
         });
