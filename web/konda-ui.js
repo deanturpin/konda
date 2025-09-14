@@ -69,7 +69,7 @@ class KondaUI {
         blackKeyInfo.forEach((blackKey) => {
             const key = this.createKey(blackKey.note + '4', blackKey.midi, 'black');
             key.style.position = 'absolute';
-            key.style.left = `${(blackKey.position * 42) - 12.5}px`;
+            key.style.left = `${(blackKey.position * 40) - 12.5}px`; // 40px matches CSS white key width
             key.style.zIndex = '10';
             keyboard.appendChild(key);
         });
