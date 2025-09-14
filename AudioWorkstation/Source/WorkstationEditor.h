@@ -144,7 +144,7 @@ public:
             
             // REVOLUTIONARY MULTI-COLORED EQ VISUALIZATION! 🎨
             processor.getIndividualBandResponses(frequencies, lowShelfResponse, peak1Response, 
-                                               peak2Response, peak3Response, highShelfResponse);
+                                               peak3Response, highShelfResponse);
             if (!frequencies.empty() && !lowShelfResponse.empty())
             {
                 // Individual colored band responses
@@ -185,9 +185,8 @@ public:
                 // Draw each EQ band in its signature color
                 drawBandResponse(lowShelfResponse, juce::Colours::red);           // Red: Low Shelf
                 drawBandResponse(peak1Response, juce::Colours::orange);          // Orange: Peak 1  
-                drawBandResponse(peak2Response, juce::Colours::yellow);          // Yellow: Peak 2
-                drawBandResponse(peak3Response, juce::Colours::cyan);            // Cyan: Peak 3 (NEW!)
-                drawBandResponse(highShelfResponse, juce::Colours::lightblue);   // Light Blue: High Shelf
+                drawBandResponse(peak3Response, juce::Colours::lightblue);       // Light Blue: Peak 3
+                drawBandResponse(highShelfResponse, juce::Colours::cyan);        // Cyan: High Shelf
             }
             
             // Draw professional grid
@@ -258,7 +257,7 @@ private:
     WorkstationProcessor& processor;
     std::vector<float> frequencies, magnitudes;
     std::vector<float> waveformData, fftData, peakHoldData;
-    std::vector<float> lowShelfResponse, peak1Response, peak2Response, peak3Response, highShelfResponse;
+    std::vector<float> lowShelfResponse, peak1Response, peak3Response, highShelfResponse;
     float baseHue1, baseHue2;
 };
 
@@ -439,12 +438,11 @@ private:
     // EQ controls
     juce::Slider lowShelfFreqSlider, lowShelfGainSlider;
     juce::Slider peak1FreqSlider, peak1GainSlider, peak1QSlider;
-    juce::Slider peak2FreqSlider, peak2GainSlider, peak2QSlider;
     juce::Slider peak3FreqSlider, peak3GainSlider, peak3QSlider;
     juce::Slider highShelfFreqSlider, highShelfGainSlider;
     
     // EQ labels
-    juce::Label lowShelfLabel, peak1Label, peak2Label, peak3Label, highShelfLabel;
+    juce::Label lowShelfLabel, peak1Label, peak3Label, highShelfLabel;
     
     // Reverb controls
     juce::Slider reverbRoomSizeSlider, reverbDampingSlider, reverbWetLevelSlider, reverbDryLevelSlider;

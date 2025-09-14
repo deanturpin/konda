@@ -35,3 +35,9 @@ JuceLibraryCode/
 
 # Log files
 *.log
+
+# Distribution files
+*.zip
+*.tar.gz
+*.dmg
+dmg_temp/

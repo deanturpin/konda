@@ -212,6 +212,8 @@ target_compile_definitions(AudioWorkstation PUBLIC
     JUCE_VST3_CAN_REPLACE_VST2=0
     JUCE_PLUGINHOST_VST=0
     JUCE_PLUGINHOST_VST3=1
+    JUCE_MICROPHONE_PERMISSION_ENABLED=1
+    JUCE_MICROPHONE_PERMISSION_TEXT="Konda needs access to audio input for processing"
 )
 
 # Install targets

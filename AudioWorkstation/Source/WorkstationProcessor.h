@@ -39,7 +39,6 @@ public:
     void getIndividualBandResponses(std::vector<float>& frequencies, 
                                    std::vector<float>& lowShelfResponse,
                                    std::vector<float>& peak1Response,
-                                   std::vector<float>& peak2Response,
                                    std::vector<float>& peak3Response,
                                    std::vector<float>& highShelfResponse);
     
@@ -67,17 +66,15 @@ private:
     // Synthesizer
     juce::Synthesiser synth;
     
-    // EQ Chain (5 bands - reverted back)
+    // EQ Chain (4 bands)
     juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, juce::dsp::IIR::Coefficients<float>> lowShelfFilter;
     juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, juce::dsp::IIR::Coefficients<float>> highShelfFilter;
     juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, juce::dsp::IIR::Coefficients<float>> peakFilter1;
-    juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, juce::dsp::IIR::Coefficients<float>> peakFilter2;
     juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, juce::dsp::IIR::Coefficients<float>> peakFilter3;
 
     juce::dsp::ProcessorChain<
         decltype(lowShelfFilter),
         decltype(peakFilter1),
-        decltype(peakFilter2),
         decltype(peakFilter3),
         decltype(highShelfFilter)
     > eqChain;

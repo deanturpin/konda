@@ -8,7 +8,7 @@ WorkstationEditor::WorkstationEditor(WorkstationProcessor& p) : juce::AudioProce
     synthLabel.setJustificationType(juce::Justification::centred);
     addAndMakeVisible(synthLabel);
     
-    eqLabel.setText("5-BAND PARAMETRIC EQ", juce::dontSendNotification);
+    eqLabel.setText("4-BAND PARAMETRIC EQ", juce::dontSendNotification);
     eqLabel.setFont(juce::FontOptions(16.0f).withStyle("bold"));
     eqLabel.setJustificationType(juce::Justification::centred);
     addAndMakeVisible(eqLabel);
@@ -60,9 +60,6 @@ WorkstationEditor::WorkstationEditor(WorkstationProcessor& p) : juce::AudioProce
     setupSlider(peak1GainSlider, peak1Label, "Peak 1 Gain", "peak1Gain");
     setupSlider(peak1QSlider, peak1Label, "Peak 1 Q", "peak1Q");
     
-    setupSlider(peak2FreqSlider, peak2Label, "Peak 2 Freq", "peak2Freq");
-    setupSlider(peak2GainSlider, peak2Label, "Peak 2 Gain", "peak2Gain");
-    setupSlider(peak2QSlider, peak2Label, "Peak 2 Q", "peak2Q");
     
     setupSlider(peak3FreqSlider, peak3Label, "Peak 3 Freq", "peak3Freq");
     setupSlider(peak3GainSlider, peak3Label, "Peak 3 Gain", "peak3Gain");
@@ -222,8 +219,8 @@ void WorkstationEditor::resized()
     eqLabel.setBounds(eqHeader.removeFromLeft(120));
     eqRandomizeButton.setBounds(eqHeader.removeFromRight(80).reduced(2));
     
-    // EQ controls (300px for 5 bands)
-    auto eqControls = rightStrip.removeFromTop(300);
+    // EQ controls (240px for 4 bands)
+    auto eqControls = rightStrip.removeFromTop(240);
     
     // Since we don't have individual labels for freq/gain/Q, we'll create descriptive text via lambda
     auto setupEQRow = [&](juce::Slider& slider, juce::Label& label, const juce::String& text) {
@@ -254,17 +251,6 @@ void WorkstationEditor::resized()
     peak3QSlider.setBounds(p3QRow.reduced(2, 0));
     eqControls.removeFromTop(spacing);
     
-    setupEQRow(peak2FreqSlider, peak2Label, "Peak2 Freq");
-    
-    auto p2GainRow = eqControls.removeFromTop(sliderHeight);
-    p2GainRow.removeFromLeft(labelWidth);
-    peak2GainSlider.setBounds(p2GainRow.reduced(2, 0));
-    eqControls.removeFromTop(spacing);
-    
-    auto p2QRow = eqControls.removeFromTop(sliderHeight);
-    p2QRow.removeFromLeft(labelWidth);
-    peak2QSlider.setBounds(p2QRow.reduced(2, 0));
-    eqControls.removeFromTop(spacing);
     
     setupEQRow(peak1FreqSlider, peak1Label, "Peak1 Freq");
     
@@ -292,8 +278,8 @@ void WorkstationEditor::resized()
     reverbLabel.setBounds(reverbHeader.removeFromLeft(80));
     reverbRandomizeButton.setBounds(reverbHeader.removeFromRight(80).reduced(2));
     
-    // Reverb controls (4 horizontal sliders - reduced to 100px)  
-    auto reverbControls = rightStrip.removeFromTop(100);
+    // Reverb controls (4 horizontal sliders - increased to 140px)  
+    auto reverbControls = rightStrip.removeFromTop(140);
     
     auto setupReverbRow = [&](juce::Slider& slider, juce::Label& label, const juce::String& text) {
         auto row = reverbControls.removeFromTop(sliderHeight);
@@ -353,9 +339,6 @@ void WorkstationEditor::randomizeEQ()
     peak1GainSlider.setValue(-12.0f + random.nextFloat() * 24.0f);
     peak1QSlider.setValue(0.5f + random.nextFloat() * 4.5f); // 0.5-5.0
     
-    peak2FreqSlider.setValue(800.0f + random.nextFloat() * 2200.0f); // 800-3000 Hz
-    peak2GainSlider.setValue(-12.0f + random.nextFloat() * 24.0f);
-    peak2QSlider.setValue(0.5f + random.nextFloat() * 4.5f);
     
     peak3FreqSlider.setValue(2000.0f + random.nextFloat() * 18000.0f); // 2-20 kHz
     peak3GainSlider.setValue(-12.0f + random.nextFloat() * 24.0f);

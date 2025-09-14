@@ -96,10 +96,10 @@ test-all: $(BUILD_DIR)/build.stamp
 	@sleep 1
 	@echo "🎼 Starting integrated Audio Workstation..."
 	@echo "   🎹 Polyphonic sine synthesizer with ADSR + filter"
-	@echo "   🎚️  5-band parametric EQ with real-time visualization"
+	@echo "   🎚️  4-band parametric EQ with real-time visualization"
 	@echo "   🎵 Built-in MIDI pattern generator"
 	@echo ""
-	@find $(BUILD_DIR) -name "Audio Workstation.app" -type d -exec open "{}" \; || \
+	@find $(BUILD_DIR) -name "Konda.app" -type d -exec open "{}" \; || \
 	(echo "⚠️  Audio Workstation not found, launching separate apps..."; \
 	 echo "1. Starting SineSynth..."; \
 	 find $(BUILD_DIR) -name "SineSynth.app" -type d -exec open "{}" \; && sleep 1; \
@@ -176,7 +176,7 @@ setup-guide:
 	@echo ""
 	@echo "After running 'make', you should see these apps launch:"
 	@echo "  • SineSynth - Polyphonic sine synthesizer"
-	@echo "  • Parametric EQ - 5-band frequency analyzer" 
+	@echo "  • Parametric EQ - 4-band frequency analyzer" 
 	@echo "  • MIDI Injector - Automated pattern generator (in terminal)"
 	@echo ""
 	@echo "STEP 1: Configure MIDI Input (Required to hear sound)"

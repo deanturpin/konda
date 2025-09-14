@@ -22,9 +22,6 @@ WorkstationProcessor::WorkstationProcessor()
           std::make_unique<juce::AudioParameterFloat>("peak1Freq", "Peak 1 Freq", 100.0f, 2000.0f, 400.0f),
           std::make_unique<juce::AudioParameterFloat>("peak1Gain", "Peak 1 Gain", -24.0f, 24.0f, 0.0f),
           std::make_unique<juce::AudioParameterFloat>("peak1Q", "Peak 1 Q", 0.1f, 10.0f, 0.7f),
-          std::make_unique<juce::AudioParameterFloat>("peak2Freq", "Peak 2 Freq", 500.0f, 5000.0f, 1000.0f),
-          std::make_unique<juce::AudioParameterFloat>("peak2Gain", "Peak 2 Gain", -24.0f, 24.0f, 0.0f),
-          std::make_unique<juce::AudioParameterFloat>("peak2Q", "Peak 2 Q", 0.1f, 10.0f, 0.7f),
           std::make_unique<juce::AudioParameterFloat>("peak3Freq", "Peak 3 Freq", 2000.0f, 20000.0f, 4000.0f),
           std::make_unique<juce::AudioParameterFloat>("peak3Gain", "Peak 3 Gain", -24.0f, 24.0f, 0.0f),
           std::make_unique<juce::AudioParameterFloat>("peak3Q", "Peak 3 Q", 0.1f, 10.0f, 0.7f),
@@ -215,14 +212,7 @@ void WorkstationProcessor::updateEQParameters()
         valueTreeState.getRawParameterValue("peak1Q")->load(),
         juce::Decibels::decibelsToGain(valueTreeState.getRawParameterValue("peak1Gain")->load()));
         
-    auto& peak2 = eqChain.get<2>();
-    *peak2.state = *juce::dsp::IIR::Coefficients<float>::makePeakFilter(
-        currentSampleRate,
-        valueTreeState.getRawParameterValue("peak2Freq")->load(),
-        valueTreeState.getRawParameterValue("peak2Q")->load(),
-        juce::Decibels::decibelsToGain(valueTreeState.getRawParameterValue("peak2Gain")->load()));
-        
-    auto& peak3 = eqChain.get<3>();
+    auto& peak3 = eqChain.get<2>();
     *peak3.state = *juce::dsp::IIR::Coefficients<float>::makePeakFilter(
         currentSampleRate,
         valueTreeState.getRawParameterValue("peak3Freq")->load(),
@@ -230,7 +220,7 @@ void WorkstationProcessor::updateEQParameters()
         juce::Decibels::decibelsToGain(valueTreeState.getRawParameterValue("peak3Gain")->load()));
     
     // High shelf filter
-    auto& highShelf = eqChain.get<4>();
+    auto& highShelf = eqChain.get<3>();
     *highShelf.state = *juce::dsp::IIR::Coefficients<float>::makeHighShelf(
         currentSampleRate,
         valueTreeState.getRawParameterValue("highShelfFreq")->load(),
@@ -267,9 +257,6 @@ void WorkstationProcessor::getFrequencyResponse(std::vector<float>& frequencies,
     const float currentPeak1Freq = valueTreeState.getRawParameterValue("peak1Freq")->load();
     const float currentPeak1Gain = valueTreeState.getRawParameterValue("peak1Gain")->load();
     const float currentPeak1Q = valueTreeState.getRawParameterValue("peak1Q")->load();
-    const float currentPeak2Freq = valueTreeState.getRawParameterValue("peak2Freq")->load();
-    const float currentPeak2Gain = valueTreeState.getRawParameterValue("peak2Gain")->load();
-    const float currentPeak2Q = valueTreeState.getRawParameterValue("peak2Q")->load();
     const float currentPeak3Freq = valueTreeState.getRawParameterValue("peak3Freq")->load();
     const float currentPeak3Gain = valueTreeState.getRawParameterValue("peak3Gain")->load();
     const float currentPeak3Q = valueTreeState.getRawParameterValue("peak3Q")->load();
@@ -292,10 +279,6 @@ void WorkstationProcessor::getFrequencyResponse(std::vector<float>& frequencies,
             currentSampleRate, currentPeak1Freq, currentPeak1Q, juce::Decibels::decibelsToGain(currentPeak1Gain));
         magnitude *= std::abs(peak1Coeffs->getMagnitudeForFrequency(freq, currentSampleRate));
         
-        auto peak2Coeffs = juce::dsp::IIR::Coefficients<float>::makePeakFilter(
-            currentSampleRate, currentPeak2Freq, currentPeak2Q, juce::Decibels::decibelsToGain(currentPeak2Gain));
-        magnitude *= std::abs(peak2Coeffs->getMagnitudeForFrequency(freq, currentSampleRate));
-        
         auto peak3Coeffs = juce::dsp::IIR::Coefficients<float>::makePeakFilter(
             currentSampleRate, currentPeak3Freq, currentPeak3Q, juce::Decibels::decibelsToGain(currentPeak3Gain));
         magnitude *= std::abs(peak3Coeffs->getMagnitudeForFrequency(freq, currentSampleRate));
@@ -311,14 +294,12 @@ void WorkstationProcessor::getFrequencyResponse(std::vector<float>& frequencies,
 void WorkstationProcessor::getIndividualBandResponses(std::vector<float>& frequencies, 
                                                      std::vector<float>& lowShelfResponse,
                                                      std::vector<float>& peak1Response,
-                                                     std::vector<float>& peak2Response,
                                                      std::vector<float>& peak3Response,
                                                      std::vector<float>& highShelfResponse)
 {
     frequencies.clear();
     lowShelfResponse.clear();
     peak1Response.clear();
-    peak2Response.clear();
     peak3Response.clear();
     highShelfResponse.clear();
     
@@ -332,9 +313,6 @@ void WorkstationProcessor::getIndividualBandResponses(std::vector<float>& freque
     const float currentPeak1Freq = valueTreeState.getRawParameterValue("peak1Freq")->load();
     const float currentPeak1Gain = valueTreeState.getRawParameterValue("peak1Gain")->load();
     const float currentPeak1Q = valueTreeState.getRawParameterValue("peak1Q")->load();
-    const float currentPeak2Freq = valueTreeState.getRawParameterValue("peak2Freq")->load();
-    const float currentPeak2Gain = valueTreeState.getRawParameterValue("peak2Gain")->load();
-    const float currentPeak2Q = valueTreeState.getRawParameterValue("peak2Q")->load();
     const float currentPeak3Freq = valueTreeState.getRawParameterValue("peak3Freq")->load();
     const float currentPeak3Gain = valueTreeState.getRawParameterValue("peak3Gain")->load();
     const float currentPeak3Q = valueTreeState.getRawParameterValue("peak3Q")->load();
@@ -356,11 +334,6 @@ void WorkstationProcessor::getIndividualBandResponses(std::vector<float>& freque
             currentSampleRate, currentPeak1Freq, currentPeak1Q, juce::Decibels::decibelsToGain(currentPeak1Gain));
         peak1Response.push_back(juce::Decibels::gainToDecibels(
             std::abs(peak1Coeffs->getMagnitudeForFrequency(freq, currentSampleRate))));
-        
-        auto peak2Coeffs = juce::dsp::IIR::Coefficients<float>::makePeakFilter(
-            currentSampleRate, currentPeak2Freq, currentPeak2Q, juce::Decibels::decibelsToGain(currentPeak2Gain));
-        peak2Response.push_back(juce::Decibels::gainToDecibels(
-            std::abs(peak2Coeffs->getMagnitudeForFrequency(freq, currentSampleRate))));
         
         auto peak3Coeffs = juce::dsp::IIR::Coefficients<float>::makePeakFilter(
             currentSampleRate, currentPeak3Freq, currentPeak3Q, juce::Decibels::decibelsToGain(currentPeak3Gain));
