@@ -44,26 +44,32 @@ class KondaUI {
 
     setupVirtualKeyboard() {
         const keyboard = document.getElementById('keyboard');
+        keyboard.style.position = 'relative'; // Ensure relative positioning for absolute children
 
         // Create octave of keys (C4 to B4)
         const whiteKeys = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
-        const blackKeys = [1, 3, 6, 8, 10]; // Positions for C#, D#, F#, G#, A#
+        const blackKeyInfo = [
+            { note: 'C#', midi: 61, position: 0.5 },  // Between C and D
+            { note: 'D#', midi: 63, position: 1.5 },  // Between D and E
+            { note: 'F#', midi: 66, position: 3.5 },  // Between F and G
+            { note: 'G#', midi: 68, position: 4.5 },  // Between G and A
+            { note: 'A#', midi: 70, position: 5.5 }   // Between A and B
+        ];
 
         let midiNote = 60; // C4
 
-        // Create white keys
+        // Create white keys first (C, D, E, F, G, A, B = MIDI notes 60, 62, 64, 65, 67, 69, 71)
+        const whiteMidiNotes = [60, 62, 64, 65, 67, 69, 71];
         whiteKeys.forEach((note, index) => {
-            const key = this.createKey(note + '4', midiNote + (index * 2), 'white');
+            const key = this.createKey(note + '4', whiteMidiNotes[index], 'white');
             keyboard.appendChild(key);
         });
 
-        // Create black keys (positioned absolutely)
-        blackKeys.forEach((position, index) => {
-            const sharpNote = whiteKeys[position === 1 ? 0 : position === 3 ? 1 : position === 6 ? 3 : position === 8 ? 4 : 5];
-            const midiValue = 61 + (index < 2 ? index * 2 : (index * 2) + 1);
-            const key = this.createKey(sharpNote + '#4', midiValue, 'black');
+        // Create black keys with proper positioning
+        blackKeyInfo.forEach((blackKey) => {
+            const key = this.createKey(blackKey.note + '4', blackKey.midi, 'black');
             key.style.position = 'absolute';
-            key.style.left = `${(position * 42) - 12.5}px`;
+            key.style.left = `${(blackKey.position * 42) - 12.5}px`;
             key.style.zIndex = '10';
             keyboard.appendChild(key);
         });
