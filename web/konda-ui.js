@@ -303,49 +303,81 @@ class KondaUI {
         if (!dataArray) return;
 
         const bufferLength = dataArray.length;
-        const barWidth = width / bufferLength;
+        const sampleRate = this.engine.audioContext.sampleRate;
+        const nyquist = sampleRate / 2;
 
-        // Draw frequency bars with color gradient
-        for (let i = 0; i < bufferLength; i++) {
-            const value = dataArray[i] / 255;
-            const barHeight = value * height;
+        // Use logarithmic frequency mapping
+        const minFreq = 20;
+        const maxFreq = Math.min(nyquist, 20000);
+        const logMin = Math.log(minFreq);
+        const logMax = Math.log(maxFreq);
+        const logRange = logMax - logMin;
 
-            // Create HSV color based on frequency
-            const hue = (i / bufferLength) * 240; // Blue to red
-            const saturation = 70 + (value * 30); // More saturation for higher levels
-            const brightness = 50 + (value * 50); // Brighter for higher levels
+        // Draw frequency bars with logarithmic mapping
+        const numBars = Math.min(bufferLength / 2, 400); // Limit for performance
+        const barWidth = width / numBars;
 
-            ctx.fillStyle = `hsl(${hue}, ${saturation}%, ${brightness}%)`;
-            ctx.fillRect(i * barWidth, height - barHeight, barWidth, barHeight);
+        for (let i = 0; i < numBars; i++) {
+            // Map logarithmically from screen position to frequency
+            const logFreq = logMin + (i / numBars) * logRange;
+            const freq = Math.exp(logFreq);
 
-            // Add glow effect for strong signals
-            if (value > 0.3) {
-                ctx.shadowBlur = 6;
-                ctx.shadowColor = `hsl(${hue}, 100%, 70%)`;
+            // Convert frequency to FFT bin index
+            const binIndex = Math.floor((freq / nyquist) * bufferLength);
+
+            if (binIndex < bufferLength) {
+                const value = dataArray[binIndex] / 255;
+                const barHeight = value * height * 1.2; // Slight amplification for visibility
+
+                // Create HSV color based on frequency (logarithmic)
+                const hue = (i / numBars) * 240; // Blue to red across log scale
+                const saturation = 70 + (value * 30);
+                const brightness = 50 + (value * 50);
+
+                ctx.fillStyle = `hsl(${hue}, ${saturation}%, ${brightness}%)`;
                 ctx.fillRect(i * barWidth, height - barHeight, barWidth, barHeight);
-                ctx.shadowBlur = 0;
-            }
 
-            // Add sparkle effects for peaks
-            if (value > 0.7) {
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(i * barWidth + barWidth/2, height - barHeight - 5, 2, 2);
+                // Add glow effect for strong signals
+                if (value > 0.3) {
+                    ctx.shadowBlur = 6;
+                    ctx.shadowColor = `hsl(${hue}, 100%, 70%)`;
+                    ctx.fillRect(i * barWidth, height - barHeight, barWidth, barHeight);
+                    ctx.shadowBlur = 0;
+                }
+
+                // Add sparkle effects for peaks
+                if (value > 0.7) {
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(i * barWidth + barWidth/2, height - barHeight - 5, 2, 2);
+                }
             }
         }
 
-        // Draw frequency grid lines
+        // Draw frequency grid lines (now properly aligned)
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
         ctx.lineWidth = 1;
 
-        // Logarithmic frequency markers
-        const frequencies = [100, 1000, 10000];
+        // Professional frequency markers
+        const frequencies = [50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000];
         frequencies.forEach(freq => {
-            const x = (Math.log(freq) - Math.log(20)) / (Math.log(20000) - Math.log(20)) * width;
-            ctx.beginPath();
-            ctx.moveTo(x, 0);
-            ctx.lineTo(x, height);
-            ctx.stroke();
+            if (freq >= minFreq && freq <= maxFreq) {
+                const logPos = (Math.log(freq) - logMin) / logRange;
+                const x = logPos * width;
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, height);
+                ctx.stroke();
+            }
         });
+
+        // Add dB grid lines (horizontal)
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+        for (let db = 0; db < height; db += height / 6) {
+            ctx.beginPath();
+            ctx.moveTo(0, db);
+            ctx.lineTo(width, db);
+            ctx.stroke();
+        }
     }
 
     formatFrequency(value) {
