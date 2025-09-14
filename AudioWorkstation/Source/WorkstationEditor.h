@@ -219,7 +219,7 @@ public:
             }
         }
         
-        // ENHANCED TURBEAUX SOUNDS with Audio-Reactive Pulsing! 🎵✨
+        // Konda by Turbeaux Sounds - Audio-Reactive Branding
         processor.getFFTData(fftData);
         float audioLevel = 0.0f;
         if (!fftData.empty())
@@ -246,7 +246,7 @@ public:
         
         g.setColour(brandColor);
         g.setFont(juce::FontOptions(108.0f).withStyle("bold"));
-        g.drawText("TURBEAUX SOUNDS", bounds, juce::Justification::centred);
+        g.drawText("KONDA", bounds, juce::Justification::centred);
     }
     
     void timerCallback() override

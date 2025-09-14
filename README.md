@@ -1,6 +1,10 @@
-# TURBEAUX SOUNDS Audio Workstation
+# Turbeaux Sounds Plugin Suite
 
-FFT-centered audio plugin with multi-colored EQ visualization for macOS.
+Professional audio plugins for macOS.
+
+## 🎵 Konda
+
+FFT-centered synthesizer with multi-colored EQ visualization.
 
 ## 🎵 Features
 

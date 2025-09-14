@@ -47,16 +47,16 @@ plugin: configure
 
 # Install AU and VST3 plugins to system locations
 install: configure
-	@echo "📦 Building and installing TURBEAUX SOUNDS Audio Workstation plugins..."
+	@echo "📦 Building and installing Konda by Turbeaux Sounds..."
 	@echo "🏗️  Building Audio Unit and VST3 plugins (using $(NPROC) cores)..."
 	@cd $(BUILD_DIR) && cmake --build . --target AudioWorkstation_AU --config $(BUILD_CONFIG) -j$(NPROC)
 	@cd $(BUILD_DIR) && cmake --build . --target AudioWorkstation_VST3 --config $(BUILD_CONFIG) -j$(NPROC)
 	@echo "📦 Installing Audio Unit plugin..."
-	@cp -R "$(BUILD_DIR)/AudioWorkstation_artefacts/$(BUILD_CONFIG)/AU/TURBEAUX SOUNDS Audio Workstation.component" ~/Library/Audio/Plug-Ins/Components/
+	@cp -R "$(BUILD_DIR)/AudioWorkstation_artefacts/$(BUILD_CONFIG)/AU/Konda.component" ~/Library/Audio/Plug-Ins/Components/
 	@echo "📦 Installing VST3 plugin..."
 	@mkdir -p ~/Library/Audio/Plug-Ins/VST3/
-	@cp -R "$(BUILD_DIR)/AudioWorkstation_artefacts/$(BUILD_CONFIG)/VST3/TURBEAUX SOUNDS Audio Workstation.vst3" ~/Library/Audio/Plug-Ins/VST3/
-	@echo "✅ TURBEAUX SOUNDS Audio Workstation installed:"
+	@cp -R "$(BUILD_DIR)/AudioWorkstation_artefacts/$(BUILD_CONFIG)/VST3/Konda.vst3" ~/Library/Audio/Plug-Ins/VST3/
+	@echo "✅ Konda installed:"
 	@echo "   • Audio Unit → ~/Library/Audio/Plug-Ins/Components/"
 	@echo "   • VST3 → ~/Library/Audio/Plug-Ins/VST3/"
 	@echo "   Restart your DAW to see the plugins"
@@ -146,7 +146,7 @@ help:
 	@echo "  make check-prereqs - Check all prerequisites are installed"
 	@echo "  make standalone   - Build standalone app only"
 	@echo "  make plugin       - Build Audio Unit plugin only"
-	@echo "  make install      - Build and install TURBEAUX SOUNDS (AU + VST3) to system"
+	@echo "  make install      - Build and install Konda (AU + VST3) to system"
 	@echo "  make test         - Build and launch standalone app"
 	@echo "  make midi-injector - Build MIDI injector tool"
 	@echo "  make eq           - Build Parametric EQ for audio analysis"

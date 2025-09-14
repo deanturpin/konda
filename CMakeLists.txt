@@ -167,10 +167,10 @@ target_compile_definitions(ParametricEQ PUBLIC
 juce_add_plugin(AudioWorkstation
     COMPANY_NAME "Turbeaux Sounds"
     PLUGIN_MANUFACTURER_CODE Trbo
-    PLUGIN_CODE TrWk
+    PLUGIN_CODE Knda
     FORMATS AU VST3 Standalone
-    PRODUCT_NAME "TURBEAUX SOUNDS Audio Workstation"
-    BUNDLE_ID com.turbeaux.audioworkstation
+    PRODUCT_NAME "Konda"
+    BUNDLE_ID com.turbeaux.konda
     IS_SYNTH TRUE
     NEEDS_MIDI_INPUT TRUE
     NEEDS_MIDI_OUTPUT FALSE
@@ -178,7 +178,7 @@ juce_add_plugin(AudioWorkstation
     EDITOR_WANTS_KEYBOARD_FOCUS FALSE
     COPY_PLUGIN_AFTER_BUILD TRUE
     PLUGIN_VERSION "1.0.0"
-    DESCRIPTION "FFT-Centered Audio Workstation with Multi-Colored EQ Visualization"
+    DESCRIPTION "FFT-Centered Synthesizer with Multi-Colored EQ Visualization by Turbeaux Sounds"
     PLUGIN_CHARACTERISTICS "Instrument;Multi-Timbral"
 )
 
