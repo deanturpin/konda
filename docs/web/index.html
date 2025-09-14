@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konda - TURBEAUX SOUNDS Web Audio Workstation</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSIjMDAwIiByeD0iMiIvPgo8cGF0aCBkPSJNNCA0aDh2OCIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjEuNSIvPgo8L3N2Zz4K">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <h1>KONDA</h1>
+                <p>TURBEAUX SOUNDS</p>
+            </div>
+            <div class="controls">
+                <button id="powerButton" class="power-btn">⚡ START</button>
+                <div class="volume-control">
+                    <label>MASTER</label>
+                    <input type="range" id="masterVolume" min="0" max="100" value="50">
+                    <span id="volumeValue">50%</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Interface -->
+        <main class="main-interface">
+            <!-- FFT Spectrum Analyzer (Center) -->
+            <section class="spectrum-section">
+                <div class="spectrum-header">
+                    <h2>LIVE SPECTRUM ANALYZER</h2>
+                    <div class="brand-overlay">TURBEAUX SOUNDS</div>
+                </div>
+                <canvas id="spectrumCanvas" width="800" height="300"></canvas>
+                <div class="frequency-labels">
+                    <span>20Hz</span>
+                    <span>100Hz</span>
+                    <span>1kHz</span>
+                    <span>10kHz</span>
+                    <span>20kHz</span>
+                </div>
+            </section>
+
+            <!-- Control Panels -->
+            <div class="control-panels">
+                <!-- Synthesizer Controls -->
+                <section class="synth-panel">
+                    <h3>SYNTHESIZER</h3>
+                    <div class="synth-controls">
+                        <div class="control-group">
+                            <label>ATTACK</label>
+                            <input type="range" id="attack" min="0.01" max="2" step="0.01" value="0.1">
+                            <span class="value">0.1s</span>
+                        </div>
+                        <div class="control-group">
+                            <label>DECAY</label>
+                            <input type="range" id="decay" min="0.01" max="2" step="0.01" value="0.2">
+                            <span class="value">0.2s</span>
+                        </div>
+                        <div class="control-group">
+                            <label>SUSTAIN</label>
+                            <input type="range" id="sustain" min="0" max="1" step="0.01" value="0.7">
+                            <span class="value">0.7</span>
+                        </div>
+                        <div class="control-group">
+                            <label>RELEASE</label>
+                            <input type="range" id="release" min="0.01" max="3" step="0.01" value="0.5">
+                            <span class="value">0.5s</span>
+                        </div>
+                        <div class="control-group">
+                            <label>FILTER CUTOFF</label>
+                            <input type="range" id="filterCutoff" min="100" max="5000" step="10" value="800">
+                            <span class="value">800Hz</span>
+                        </div>
+                        <div class="control-group">
+                            <label>RESONANCE</label>
+                            <input type="range" id="resonance" min="0.1" max="3" step="0.1" value="0.5">
+                            <span class="value">0.5</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- EQ Controls -->
+                <section class="eq-panel">
+                    <h3>4-BAND PARAMETRIC EQ</h3>
+                    <div class="eq-controls">
+                        <div class="eq-band">
+                            <label>LOW SHELF</label>
+                            <div class="eq-controls-row">
+                                <input type="range" id="lowGain" min="-24" max="24" step="0.5" value="0">
+                                <span class="value">0dB</span>
+                            </div>
+                        </div>
+                        <div class="eq-band">
+                            <label>PEAK 1</label>
+                            <div class="eq-controls-row">
+                                <input type="range" id="peak1Freq" min="20" max="20000" step="10" value="400">
+                                <input type="range" id="peak1Gain" min="-24" max="24" step="0.5" value="0">
+                                <input type="range" id="peak1Q" min="0.1" max="10" step="0.1" value="1">
+                            </div>
+                            <div class="eq-labels">
+                                <span class="value">400Hz</span>
+                                <span class="value">0dB</span>
+                                <span class="value">Q:1</span>
+                            </div>
+                        </div>
+                        <div class="eq-band">
+                            <label>PEAK 2</label>
+                            <div class="eq-controls-row">
+                                <input type="range" id="peak2Freq" min="20" max="20000" step="10" value="2000">
+                                <input type="range" id="peak2Gain" min="-24" max="24" step="0.5" value="0">
+                                <input type="range" id="peak2Q" min="0.1" max="10" step="0.1" value="1">
+                            </div>
+                            <div class="eq-labels">
+                                <span class="value">2kHz</span>
+                                <span class="value">0dB</span>
+                                <span class="value">Q:1</span>
+                            </div>
+                        </div>
+                        <div class="eq-band">
+                            <label>HIGH SHELF</label>
+                            <div class="eq-controls-row">
+                                <input type="range" id="highGain" min="-24" max="24" step="0.5" value="0">
+                                <span class="value">0dB</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- MIDI Generator -->
+                <section class="midi-panel">
+                    <h3>MIDI GENERATOR</h3>
+                    <div class="midi-controls">
+                        <div class="control-group">
+                            <label>MODE</label>
+                            <select id="musicalMode">
+                                <option value="major">Major</option>
+                                <option value="minor">Minor</option>
+                                <option value="dorian">Dorian</option>
+                                <option value="phrygian">Phrygian</option>
+                                <option value="lydian">Lydian</option>
+                                <option value="mixolydian">Mixolydian</option>
+                                <option value="locrian">Locrian</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label>PATTERN</label>
+                            <select id="pattern">
+                                <option value="scale">Scale</option>
+                                <option value="arpeggios">Arpeggios</option>
+                                <option value="chords">Chord Tones</option>
+                                <option value="steps">Step Pattern</option>
+                                <option value="cascade">Cascading</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label>TEMPO</label>
+                            <input type="range" id="tempo" min="60" max="180" step="5" value="120">
+                            <span class="value">120 BPM</span>
+                        </div>
+                        <div class="midi-buttons">
+                            <button id="playPattern" class="midi-btn">▶ PLAY</button>
+                            <button id="stopPattern" class="midi-btn">⏹ STOP</button>
+                            <button id="randomAll" class="midi-btn">🎲 RANDOM ALL</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Virtual Keyboard -->
+        <section class="keyboard-section">
+            <h3>VIRTUAL KEYBOARD</h3>
+            <div id="keyboard" class="keyboard"></div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>© 2025 TURBEAUX SOUNDS - Professional Audio Workstation |
+               <a href="https://github.com/deanturpin/ts" target="_blank">GitHub</a> |
+               <a href="https://deanturpin.github.io/ts/" target="_blank">Download Plugins</a>
+            </p>
+        </footer>
+    </div>
+
+    <script src="konda-engine.js"></script>
+    <script src="konda-ui.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
