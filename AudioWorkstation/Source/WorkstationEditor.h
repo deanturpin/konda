@@ -291,28 +291,31 @@ public:
         if (isStandalone) {
             addAndMakeVisible(playStopButton);
         }
-        
+
         // Key controls - up/down buttons with display
         keyUpButton.setButtonText("▲");
         keyDownButton.setButtonText("▼");
         currentKey = 0; // Start with C
-        
+
         keyUpButton.onClick = [this] {
             currentKey = (currentKey + 1) % 12;
             processor.setKey(60 + currentKey); // C4 + offset
             updateKeyDisplay();
         };
-        
+
         keyDownButton.onClick = [this] {
             currentKey = (currentKey + 11) % 12; // +11 = -1 in mod 12
             processor.setKey(60 + currentKey);
             updateKeyDisplay();
         };
-        
-        addAndMakeVisible(keyUpButton);
-        addAndMakeVisible(keyDownButton);
-        addAndMakeVisible(keyDisplayLabel);
-        
+
+        // Only add key controls in standalone mode
+        if (isStandalone) {
+            addAndMakeVisible(keyUpButton);
+            addAndMakeVisible(keyDownButton);
+            addAndMakeVisible(keyDisplayLabel);
+        }
+
         // Mode selector
         modeSelector.addItem("Major", 1);
         modeSelector.addItem("Minor", 2);
@@ -325,7 +328,7 @@ public:
         modeSelector.onChange = [this] {
             processor.setMode(modeSelector.getSelectedId() - 1);
         };
-        
+
         // Pattern selector
         patternSelector.addItem("Scale", 1);
         patternSelector.addItem("Arpeggios", 2);
@@ -336,9 +339,12 @@ public:
         patternSelector.onChange = [this] {
             processor.setMelodyPattern(patternSelector.getSelectedId() - 1);
         };
-        
-        addAndMakeVisible(modeSelector);
-        addAndMakeVisible(patternSelector);
+
+        // Only add selectors in standalone mode
+        if (isStandalone) {
+            addAndMakeVisible(modeSelector);
+            addAndMakeVisible(patternSelector);
+        }
         
         keyDisplayLabel.setText("C", juce::dontSendNotification);
         keyDisplayLabel.setJustificationType(juce::Justification::centred);
@@ -356,25 +362,30 @@ public:
     void resized() override
     {
         auto area = getLocalBounds().reduced(5);
-        
-        // Top row: Key controls, selectors and buttons
+
+        // Top row: Key controls, selectors and buttons (only in standalone mode)
         auto controlRow = area.removeFromTop(30);
-        
-        // Key controls on left (compact design)
-        auto keyArea = controlRow.removeFromLeft(80);
-        auto buttonWidth = 25;
-        keyDownButton.setBounds(keyArea.removeFromLeft(buttonWidth).reduced(2));
-        keyDisplayLabel.setBounds(keyArea.removeFromLeft(30).reduced(2));
-        keyUpButton.setBounds(keyArea.removeFromLeft(buttonWidth).reduced(2));
-        
-        controlRow.removeFromLeft(10); // Spacing
-        
-        // Mode and pattern selectors in middle
-        auto selectorWidth = controlRow.getWidth() * 0.6f / 2; // Take 60% for 2 selectors
-        modeSelector.setBounds(controlRow.removeFromLeft(selectorWidth).reduced(15, 2));
-        patternSelector.setBounds(controlRow.removeFromLeft(selectorWidth).reduced(15, 2));
-        
-        controlRow.removeFromLeft(10); // Spacing
+
+        // Only layout controls if they're visible (standalone mode)
+        if (keyUpButton.isVisible() && keyDownButton.isVisible()) {
+            // Key controls on left (compact design)
+            auto keyArea = controlRow.removeFromLeft(80);
+            auto buttonWidth = 25;
+            keyDownButton.setBounds(keyArea.removeFromLeft(buttonWidth).reduced(2));
+            keyDisplayLabel.setBounds(keyArea.removeFromLeft(30).reduced(2));
+            keyUpButton.setBounds(keyArea.removeFromLeft(buttonWidth).reduced(2));
+
+            controlRow.removeFromLeft(10); // Spacing
+        }
+
+        // Mode and pattern selectors in middle (only if visible)
+        if (modeSelector.isVisible() && patternSelector.isVisible()) {
+            auto selectorWidth = controlRow.getWidth() * 0.6f / 2; // Take 60% for 2 selectors
+            modeSelector.setBounds(controlRow.removeFromLeft(selectorWidth).reduced(15, 2));
+            patternSelector.setBounds(controlRow.removeFromLeft(selectorWidth).reduced(15, 2));
+
+            controlRow.removeFromLeft(10); // Spacing
+        }
 
         // Play button on right (only if visible)
         if (playStopButton.isVisible()) {
@@ -389,6 +400,11 @@ public:
     
     void randomize()
     {
+        // Only randomize if selectors are visible (standalone mode)
+        if (!modeSelector.isVisible() || !patternSelector.isVisible()) {
+            return;
+        }
+
         // Only randomize mode and pattern, keep the key unchanged
         // Get current mode to avoid picking the same one
         int currentMode = modeSelector.getSelectedId();
@@ -396,16 +412,16 @@ public:
         do {
             newMode = 1 + juce::Random::getSystemRandom().nextInt(7);
         } while (newMode == currentMode && juce::Random::getSystemRandom().nextFloat() < 0.7f); // 70% chance to pick different mode
-        
+
         int currentPattern = patternSelector.getSelectedId();
         int newPattern;
         do {
             newPattern = 1 + juce::Random::getSystemRandom().nextInt(5);
         } while (newPattern == currentPattern && juce::Random::getSystemRandom().nextFloat() < 0.8f); // 80% chance to pick different pattern
-        
+
         modeSelector.setSelectedId(newMode);
         patternSelector.setSelectedId(newPattern);
-        
+
         // Update the processor (key stays the same)
         processor.setMode(modeSelector.getSelectedId() - 1);
         processor.setMelodyPattern(patternSelector.getSelectedId() - 1);

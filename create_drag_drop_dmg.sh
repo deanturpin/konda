@@ -5,7 +5,7 @@
 
 set -e
 
-VERSION="1.2.2"
+VERSION="1.3.0"
 APP_NAME="Konda"
 DMG_NAME="Konda_v${VERSION}_Installer"
 TEMP_DMG="temp_${DMG_NAME}.dmg"
@@ -26,26 +26,41 @@ echo "📦 Copying Konda plugins..."
 cp -R "build/AudioWorkstation_artefacts/Release/AU/Konda.component" dmg_temp/
 cp -R "build/AudioWorkstation_artefacts/Release/VST3/Konda.vst3" dmg_temp/
 
-# Create symbolic links to plugin folders
+# Create installation helper script instead of symbolic links
 echo "🔗 Creating installation shortcuts..."
-ln -s ~/Library/Audio/Plug-Ins/Components "dmg_temp/Audio Units Folder"
-ln -s ~/Library/Audio/Plug-Ins/VST3 "dmg_temp/VST3 Folder"
+
+# Create a helper script that opens the correct folders
+cat > "dmg_temp/Open Audio Units Folder.command" << 'SCRIPT'
+#!/bin/bash
+open "$HOME/Library/Audio/Plug-Ins/Components"
+SCRIPT
+
+cat > "dmg_temp/Open VST3 Folder.command" << 'SCRIPT'
+#!/bin/bash
+open "$HOME/Library/Audio/Plug-Ins/VST3"
+SCRIPT
+
+# Make the scripts executable
+chmod +x "dmg_temp/Open Audio Units Folder.command"
+chmod +x "dmg_temp/Open VST3 Folder.command"
 
 # Create README
 cat > dmg_temp/README.txt << 'README'
-Konda v1.2.2 - Installation Instructions
+Konda v1.3.0 - Installation Instructions
 ========================================
 
 QUICK INSTALL:
-1. Drag "Konda.component" to "Audio Units Folder"
-2. Drag "Konda.vst3" to "VST3 Folder"
-3. Restart your DAW
+1. Double-click "Open Audio Units Folder.command"
+2. Drag "Konda.component" into the opened folder
+3. Double-click "Open VST3 Folder.command"
+4. Drag "Konda.vst3" into the opened folder
+5. Restart your DAW
 
-WHAT'S NEW IN v1.2.2:
-• Professional drag & drop installer
-• Streamlined 4-band parametric EQ
-• Enhanced audio input handling
-• Improved interface layout
+WHAT'S NEW IN v1.3.0:
+• Fixed drag & drop installer with proper folder access
+• Android app support with USB MIDI
+• Context-aware UI (adapts to plugin vs standalone)
+• Enhanced cross-platform compatibility
 
 FEATURES:
 • FFT-centered interface with large spectrum analyzer
@@ -80,6 +95,7 @@ cp -R dmg_temp/* "/Volumes/${VOLUME_NAME}/"
 
 # Set custom icon positions using AppleScript
 echo "🎨 Setting custom layout..."
+sleep 2  # Give the mount time to settle
 osascript << APPLESCRIPT
 tell application "Finder"
     tell disk "${VOLUME_NAME}"
@@ -93,10 +109,10 @@ tell application "Finder"
         set icon size of viewOptions to 72
         
         -- Position items
-        set position of item "Konda.component" of container window to {150, 150}
-        set position of item "Konda.vst3" of container window to {150, 250}
-        set position of item "Audio Units Folder" of container window to {450, 150}
-        set position of item "VST3 Folder" of container window to {450, 250}
+        set position of item "Konda.component" of container window to {120, 150}
+        set position of item "Konda.vst3" of container window to {120, 250}
+        set position of item "Open Audio Units Folder.command" of container window to {450, 150}
+        set position of item "Open VST3 Folder.command" of container window to {450, 250}
         set position of item "README.txt" of container window to {300, 350}
         
         update without registering applications
@@ -105,8 +121,9 @@ tell application "Finder"
 end tell
 APPLESCRIPT
 
-# Unmount the DMG
-hdiutil detach "/Volumes/${VOLUME_NAME}"
+# Unmount the DMG with force if needed
+echo "📤 Ejecting disk image..."
+hdiutil detach "/Volumes/${VOLUME_NAME}" -force || true
 
 # Convert to compressed read-only DMG
 echo "📦 Compressing disk image..."
