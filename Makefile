@@ -5,7 +5,7 @@ BUILD_DIR = build
 BUILD_CONFIG = Release
 AU_PLUGIN = ~/Library/Audio/Plug-Ins/Components/SineSynth.component
 
-.PHONY: all install clean configure deploy help check-prereqs test-with-midi test-all setup-guide shutdown watch dev restart lint-md watch-md test-audio validate-au test-vst3
+.PHONY: all install clean configure deploy help check-prereqs test-with-midi test-all setup-guide shutdown watch dev restart lint-md watch-md test-audio validate-au test-vst3 screenshot
 
 # Default target - build and run everything
 all: test-all
@@ -213,6 +213,8 @@ help:
 	@echo "  make watch        - Watch files and rebuild on changes"
 	@echo "  make lint-md      - Lint all markdown files"
 	@echo "  make watch-md     - Watch markdown files and auto-lint on changes"
+	@echo "  make screenshot   - Take release screenshots (standalone + plugin)"
+	@echo "  make screenshot-v1.3.0 - Take screenshots for specific version"
 	@echo ""
 	@echo "Prerequisites:"
 	@echo "  - CMake: brew install cmake"
@@ -331,3 +333,13 @@ watch-md:
 		echo "❌ fswatch required for watching. Install with: brew install fswatch"; \
 		exit 1; \
 	fi
+
+# Take release screenshots for documentation
+screenshot:
+	@echo "📸 Taking release screenshots..."
+	@./take_screenshot.sh $(VERSION)
+
+# Take screenshots with version number
+screenshot-v%:
+	@echo "📸 Taking release screenshots for version $*..."
+	@./take_screenshot.sh $*
