@@ -8,11 +8,13 @@ Part of the Turbeaux Sounds plugin suite.
 
 ### Android 📱
 
-#### Installation
-1. Download [Konda.apk from releases](https://github.com/deanturpin/ts/releases/latest)
-2. Enable "Install from Unknown Sources" in Android settings
-3. Install the APK file
-4. Grant audio recording permissions when prompted
+#### Build from Source
+1. Follow the [Android Build Guide](README_ANDROID.md)
+2. Run `./build_android.sh` to create project structure
+3. Open `android/` folder in Android Studio
+4. Build and install APK to your device
+
+**Why build from source?** Security, customization, and compatibility with your specific Android device.
 
 #### USB MIDI Setup
 1. Connect MIDI keyboard to phone via USB-C adapter
