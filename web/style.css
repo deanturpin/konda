@@ -84,6 +84,127 @@ body {
     color: #aaa;
 }
 
+/* Hero Section */
+.hero-section {
+    padding: 40px 20px;
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.1) 0%, rgba(255, 0, 128, 0.1) 100%);
+    border-bottom: 2px solid #333;
+}
+
+.hero-content {
+    display: flex;
+    gap: 40px;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.hero-text {
+    flex: 1;
+    max-width: 500px;
+}
+
+.hero-text h2 {
+    font-size: 2.5rem;
+    color: #00ffff;
+    margin-bottom: 15px;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+.hero-text > p {
+    font-size: 1.2rem;
+    color: #ccc;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+.hero-features {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 30px;
+}
+
+.hero-features span {
+    font-size: 1rem;
+    color: #aaa;
+    padding: 5px 0;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.download-btn, .try-btn {
+    padding: 15px 25px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    font-family: inherit;
+}
+
+.download-btn {
+    background: linear-gradient(45deg, #ff0080, #ff4000);
+    color: white;
+}
+
+.try-btn {
+    background: linear-gradient(45deg, #00ffff, #0080ff);
+    color: white;
+}
+
+.download-btn:hover, .try-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+.hero-screenshot {
+    flex: 1;
+    text-align: center;
+}
+
+.screenshot-img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    border: 3px solid #333;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease;
+}
+
+.screenshot-img:hover {
+    transform: scale(1.02);
+}
+
+.screenshot-caption {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #888;
+    font-style: italic;
+}
+
+/* Responsive hero section */
+@media (max-width: 1024px) {
+    .hero-content {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .hero-text h2 {
+        font-size: 2rem;
+    }
+
+    .hero-buttons {
+        justify-content: center;
+    }
+}
+
 /* Main Interface */
 .main-interface {
     padding: 20px;

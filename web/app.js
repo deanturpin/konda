@@ -19,6 +19,9 @@ class KondaApp {
             // Initialize UI first (doesn't require audio context)
             this.ui.initialize();
 
+            // Set up hero section button
+            this.setupHeroButton();
+
             // Make globally available
             window.kondaEngine = this.engine;
             window.kondaUI = this.ui;
@@ -31,6 +34,30 @@ class KondaApp {
         } catch (error) {
             console.error('❌ Failed to initialize Konda:', error);
             this.showErrorMessage(error);
+        }
+    }
+
+    setupHeroButton() {
+        const tryWebVersionBtn = document.getElementById('tryWebVersion');
+        if (tryWebVersionBtn) {
+            tryWebVersionBtn.addEventListener('click', () => {
+                // Scroll to the main interface
+                const mainInterface = document.querySelector('.main-interface');
+                if (mainInterface) {
+                    mainInterface.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+
+                // If not already started, trigger the power button
+                const powerButton = document.getElementById('powerButton');
+                if (powerButton && !powerButton.classList.contains('active')) {
+                    setTimeout(() => {
+                        powerButton.click();
+                    }, 500); // Small delay for smooth scroll
+                }
+            });
         }
     }
 
