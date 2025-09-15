@@ -21,9 +21,8 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
       with:
-        api-level: 33
-        build-tools: 33.0.0
-        ndk-version: 25.2.9519653
+        cmdline-tools-version: 11076708
+        packages: "platform-tools platforms;android-33 build-tools;33.0.0 ndk;25.2.9519653"
 
     - name: Create Android Project
       run: |
@@ -44,11 +43,7 @@ jobs:
 
     - name: Upload APK to Release
       if: startsWith(github.ref, 'refs/tags/')
-      uses: actions/upload-release-asset@v1
+      run: |
+        gh release upload ${{ github.ref_name }} android/app/build/outputs/apk/debug/app-debug.apk --clobber
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: android/app/build/outputs/apk/debug/app-debug.apk
-        asset_name: Konda-debug.apk
-        asset_content_type: application/vnd.android.package-archive

@@ -110,6 +110,25 @@ Pre-built binaries available at: <https://deanturpin.github.io/ts/>
 - **Languages**: C++ (JUCE framework)
 - **Build Time**: ~30 seconds (8 cores)
 
+## 📸 Documentation
+
+### Release Screenshots
+
+Automated screenshot generation for releases:
+
+```bash
+# Take screenshots for current version
+make screenshot
+
+# Take screenshots for specific version
+make screenshot-v1.3.0
+```
+
+Screenshots are saved to `release_screenshots/` directory and include:
+- Standalone application interface
+- Plugin interface in Logic Pro
+- Automatic comparison generation between versions
+
 ## 🤝 Contributing
 
 Issues and pull requests welcome at: <https://github.com/deanturpin/ts>

@@ -41,3 +41,4 @@ JuceLibraryCode/
 *.tar.gz
 *.dmg
 dmg_temp/
+release_screenshots/

@@ -127,6 +127,28 @@ dependencies {
 }
 EOF
 
+# Create gradle wrapper
+mkdir -p android/gradle/wrapper
+cat > android/gradle/wrapper/gradle-wrapper.properties << 'EOF'
+distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+distributionUrl=https\://services.gradle.org/distributions/gradle-8.0-bin.zip
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists
+EOF
+
+cat > android/gradlew << 'EOF'
+#!/bin/sh
+exec gradle "$@"
+EOF
+
+chmod +x android/gradlew
+
+# Create settings.gradle
+cat > android/settings.gradle << 'EOF'
+include ':app'
+EOF
+
 echo "✅ Android project structure created"
 echo ""
 echo "📱 To build for Android:"
