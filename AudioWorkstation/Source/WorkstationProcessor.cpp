@@ -15,7 +15,10 @@ WorkstationProcessor::WorkstationProcessor()
           std::make_unique<juce::AudioParameterFloat>("filterCutoff", "Filter Cutoff", minFrequency, 5000.0f, 800.0f),
           std::make_unique<juce::AudioParameterFloat>("filterResonance", "Filter Resonance", 0.1f, 5.0f, 0.5f),
           std::make_unique<juce::AudioParameterFloat>("distortion", "Distortion", 1.0f, 10.0f, 1.0f),
-          
+
+          // Octave control
+          std::make_unique<juce::AudioParameterInt>("octave", "Octave", 2, 6, 4),
+
           // EQ parameters
           std::make_unique<juce::AudioParameterFloat>("lowShelfFreq", "Low Shelf Freq", minFrequency, 500.0f, 80.0f),
           std::make_unique<juce::AudioParameterFloat>("lowShelfGain", "Low Shelf Gain", -24.0f, 24.0f, 0.0f),
@@ -94,7 +97,36 @@ void WorkstationProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::
     {
         generateMIDIPattern(midiMessages, buffer.getNumSamples());
     }
-    
+
+    // Apply octave transposition to all incoming MIDI
+    int octaveParam = valueTreeState.getRawParameterValue("octave")->load();
+    int octaveShift = (octaveParam - 4) * 12; // Offset from default octave 4
+
+    if (octaveShift != 0)
+    {
+        juce::MidiBuffer transposedMidi;
+
+        for (const auto& message : midiMessages)
+        {
+            auto midiMessage = message.getMessage();
+
+            if (midiMessage.isNoteOn() || midiMessage.isNoteOff())
+            {
+                int newNote = midiMessage.getNoteNumber() + octaveShift;
+                newNote = juce::jlimit(0, 127, newNote); // Keep in valid MIDI range
+
+                if (midiMessage.isNoteOn())
+                    midiMessage = juce::MidiMessage::noteOn(midiMessage.getChannel(), newNote, midiMessage.getVelocity());
+                else
+                    midiMessage = juce::MidiMessage::noteOff(midiMessage.getChannel(), newNote, midiMessage.getVelocity());
+            }
+
+            transposedMidi.addEvent(midiMessage, message.samplePosition);
+        }
+
+        midiMessages.swapWith(transposedMidi);
+    }
+
     // Update synth parameters if they've changed
     updateSynthParameters();
     

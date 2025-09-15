@@ -1,7 +1,7 @@
 #pragma once
-#define JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED 1
-#include "../../../juce_wasm/modules/juce_gui_basics/juce_gui_basics.h"
-#include "../../../juce_wasm/modules/juce_audio_devices/juce_audio_devices.h"
+#include <juce_audio_processors/juce_audio_processors.h>
+#include <juce_gui_basics/juce_gui_basics.h>
+#include <juce_audio_devices/juce_audio_devices.h>
 #include "WorkstationProcessor.h"
 
 class EQVisualizerComponent : public juce::Component, public juce::Timer
@@ -267,8 +267,11 @@ class MIDIPatternComponent : public juce::Component
 public:
     MIDIPatternComponent(WorkstationProcessor& p) : processor(p)
     {
+        // Only show play button in standalone mode (not when running as plugin)
+        bool isStandalone = processor.wrapperType == juce::AudioProcessor::wrapperType_Standalone;
+
         playStopButton.setButtonText("Play");
-        playStopButton.onClick = [this] { 
+        playStopButton.onClick = [this] {
             if (processor.isPatternPlaying()) {
                 // Stop
                 processor.setPatternPlaying(false);
@@ -277,14 +280,17 @@ public:
                 // Play
                 processor.setPatternPlaying(true);
                 playStopButton.setButtonText("Stop");
-                
+
                 // Trigger colour change in visualiser
                 if (onPlayCallback)
                     onPlayCallback();
             }
         };
-        
-        addAndMakeVisible(playStopButton);
+
+        // Only make visible in standalone mode
+        if (isStandalone) {
+            addAndMakeVisible(playStopButton);
+        }
         
         // Key controls - up/down buttons with display
         keyUpButton.setButtonText("▲");
@@ -369,9 +375,11 @@ public:
         patternSelector.setBounds(controlRow.removeFromLeft(selectorWidth).reduced(15, 2));
         
         controlRow.removeFromLeft(10); // Spacing
-        
-        // Play button on right
-        playStopButton.setBounds(controlRow.removeFromRight(70).reduced(2));
+
+        // Play button on right (only if visible)
+        if (playStopButton.isVisible()) {
+            playStopButton.setBounds(controlRow.removeFromRight(70).reduced(2));
+        }
     }
     
     void setOnPlayCallback(std::function<void()> callback)
@@ -458,6 +466,15 @@ private:
     juce::ComboBox midiDeviceSelector;
     juce::Label midiDeviceLabel;
     juce::TextButton refreshMidiButton;
+
+    // Octave selection
+    juce::Label octaveLabel;
+    juce::ToggleButton octave2Button, octave3Button, octave4Button, octave5Button, octave6Button;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> octave2Attachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> octave3Attachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> octave4Attachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> octave5Attachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> octave6Attachment;
     
     // Section labels
     juce::Label synthLabel, eqLabel, reverbLabel, midiLabel;

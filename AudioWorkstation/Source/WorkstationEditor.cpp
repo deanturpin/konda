@@ -87,15 +87,15 @@ WorkstationEditor::WorkstationEditor(WorkstationProcessor& p) : juce::AudioProce
         eqVisualizer->onPlayPressed(); 
     });
     
-    // Setup MIDI device selector
+    // Setup MIDI device selector (only visible in standalone mode)
+    bool isStandalone = processor.wrapperType == juce::AudioProcessor::wrapperType_Standalone;
+
     midiDeviceLabel.setText("MIDI Device:", juce::dontSendNotification);
     midiDeviceLabel.setJustificationType(juce::Justification::centredLeft);
     midiDeviceLabel.setFont(juce::FontOptions(12.0f));
-    addAndMakeVisible(midiDeviceLabel);
-    
+
     refreshMidiButton.setButtonText("Refresh");
     refreshMidiButton.onClick = [this]() { refreshMidiDevices(); };
-    addAndMakeVisible(refreshMidiButton);
     
     midiDeviceSelector.onChange = [this]() {
         int selectedIndex = midiDeviceSelector.getSelectedItemIndex();
@@ -105,10 +105,16 @@ WorkstationEditor::WorkstationEditor(WorkstationProcessor& p) : juce::AudioProce
             processor.setSelectedMidiDevice(deviceName);
         }
     };
-    addAndMakeVisible(midiDeviceSelector);
-    
-    // Initialize MIDI device list
-    refreshMidiDevices();
+
+    // Only show MIDI device controls in standalone mode
+    if (isStandalone) {
+        addAndMakeVisible(midiDeviceSelector);
+        addAndMakeVisible(midiDeviceLabel);
+        addAndMakeVisible(refreshMidiButton);
+
+        // Initialize MIDI device list
+        refreshMidiDevices();
+    }
     
     // Setup randomize buttons
     synthRandomizeButton.setButtonText("Random");
@@ -148,7 +154,41 @@ WorkstationEditor::WorkstationEditor(WorkstationProcessor& p) : juce::AudioProce
     reverbRandomizeButton.setColour(juce::TextButton::buttonColourId, juce::Colours::darkmagenta);
     midiRandomizeButton.setColour(juce::TextButton::buttonColourId, juce::Colours::darkorange);
     globalRandomizeButton.setColour(juce::TextButton::buttonColourId, juce::Colours::purple);
-    
+
+    // Octave radio buttons setup
+    octaveLabel.setText("OCTAVE", juce::dontSendNotification);
+    octaveLabel.setFont(juce::FontOptions(12.0f).withStyle("bold"));
+    octaveLabel.setJustificationType(juce::Justification::centred);
+    addAndMakeVisible(octaveLabel);
+
+    octave2Button.setButtonText("2");
+    octave3Button.setButtonText("3");
+    octave4Button.setButtonText("4");
+    octave5Button.setButtonText("5");
+    octave6Button.setButtonText("6");
+
+    octave2Button.setRadioGroupId(1);
+    octave3Button.setRadioGroupId(1);
+    octave4Button.setRadioGroupId(1);
+    octave5Button.setRadioGroupId(1);
+    octave6Button.setRadioGroupId(1);
+
+    // Set default octave (4)
+    octave4Button.setToggleState(true, juce::dontSendNotification);
+
+    // Octave change callbacks
+    octave2Button.onClick = [this] { processor.setOctave(2); };
+    octave3Button.onClick = [this] { processor.setOctave(3); };
+    octave4Button.onClick = [this] { processor.setOctave(4); };
+    octave5Button.onClick = [this] { processor.setOctave(5); };
+    octave6Button.onClick = [this] { processor.setOctave(6); };
+
+    addAndMakeVisible(octave2Button);
+    addAndMakeVisible(octave3Button);
+    addAndMakeVisible(octave4Button);
+    addAndMakeVisible(octave5Button);
+    addAndMakeVisible(octave6Button);
+
     setSize(1200, 800);
     setResizable(true, true);
     setResizeLimits(800, 600, 1600, 1000);
@@ -163,19 +203,33 @@ void WorkstationEditor::resized()
 {
     auto bounds = getLocalBounds().reduced(10);
     
-    // Bottom control strip: MIDI + Global controls  
-    auto bottomStrip = bounds.removeFromBottom(150); // Increased height for MIDI device controls
+    // Bottom control strip: MIDI + Global controls
+    bool isStandalone = processor.wrapperType == juce::AudioProcessor::wrapperType_Standalone;
+    auto bottomStripHeight = isStandalone ? 150 : 125; // Less height needed when MIDI device controls hidden
+    auto bottomStrip = bounds.removeFromBottom(bottomStripHeight);
     auto midiHeader = bottomStrip.removeFromTop(25);
     midiLabel.setBounds(midiHeader.removeFromLeft(150));
     globalRandomizeButton.setBounds(midiHeader.removeFromRight(120).reduced(2));
     midiRandomizeButton.setBounds(midiHeader.removeFromRight(80).reduced(2));
-    
-    // MIDI device selection row
-    auto midiDeviceRow = bottomStrip.removeFromTop(25);
-    midiDeviceLabel.setBounds(midiDeviceRow.removeFromLeft(80));
-    refreshMidiButton.setBounds(midiDeviceRow.removeFromRight(70).reduced(2));
-    midiDeviceSelector.setBounds(midiDeviceRow.reduced(2));
-    
+
+    // MIDI device selection row (only in standalone mode)
+    if (isStandalone) {
+        auto midiDeviceRow = bottomStrip.removeFromTop(25);
+        midiDeviceLabel.setBounds(midiDeviceRow.removeFromLeft(80));
+        refreshMidiButton.setBounds(midiDeviceRow.removeFromRight(70).reduced(2));
+        midiDeviceSelector.setBounds(midiDeviceRow.reduced(2));
+    }
+
+    // Octave selection row
+    auto octaveRow = bottomStrip.removeFromTop(30);
+    octaveLabel.setBounds(octaveRow.removeFromLeft(60));
+    int buttonWidth = 35;
+    octave2Button.setBounds(octaveRow.removeFromLeft(buttonWidth).reduced(2));
+    octave3Button.setBounds(octaveRow.removeFromLeft(buttonWidth).reduced(2));
+    octave4Button.setBounds(octaveRow.removeFromLeft(buttonWidth).reduced(2));
+    octave5Button.setBounds(octaveRow.removeFromLeft(buttonWidth).reduced(2));
+    octave6Button.setBounds(octaveRow.removeFromLeft(buttonWidth).reduced(2));
+
     bottomStrip.removeFromTop(5); // Small gap
     
     // MIDI pattern component in remaining bottom strip  

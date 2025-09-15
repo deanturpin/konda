@@ -1,7 +1,6 @@
 #pragma once
-#define JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED 1
-#include "../../../juce_wasm/modules/juce_audio_processors/juce_audio_processors.h"
-#include "../../../juce_wasm/modules/juce_dsp/juce_dsp.h"
+#include <juce_audio_processors/juce_audio_processors.h>
+#include <juce_dsp/juce_dsp.h>
 #include "SineWaveVoice.h"
 #include "SineWaveSound.h"
 
@@ -56,6 +55,7 @@ public:
     void setKey(int newKey) { rootKey = newKey; }
     void setMode(int newMode) { currentMode = newMode; }
     void setMelodyPattern(int pattern) { melodyPattern = pattern; }
+    void setOctave(int octave) { rootKey = (octave * 12); } // Set root to C of specified octave
     
     // MIDI device management
     juce::StringArray getAvailableMidiDevices();
