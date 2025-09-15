@@ -2,7 +2,25 @@
 
 Part of the Turbeaux Sounds plugin suite.
 
+**Now available on Android with USB MIDI support!** 🤖
+
 ## Quick Install
+
+### Android 📱
+
+#### Installation
+1. Download [Konda.apk from releases](https://github.com/deanturpin/ts/releases/latest)
+2. Enable "Install from Unknown Sources" in Android settings
+3. Install the APK file
+4. Grant audio recording permissions when prompted
+
+#### USB MIDI Setup
+1. Connect MIDI keyboard to phone via USB-C adapter
+2. Launch Konda
+3. Grant USB device permission when prompted
+4. Play with full polyphony and effects! 🎹
+
+**Requirements**: Android 6.0+, USB OTG/Host mode support
 
 ### macOS
 
