@@ -148,6 +148,25 @@ if [ "$VERSION" != "current" ] && [ -f "$SCREENSHOTS_DIR/konda_v${VERSION}_stand
 fi
 
 echo ""
+echo "🖼️  4. Generating web-optimized versions..."
+
+# Create optimized versions for web use
+if [ -f "$SCREENSHOTS_DIR/konda_v${VERSION}_standalone.png" ]; then
+    if command -v magick >/dev/null 2>&1; then
+        echo "📱 Creating web-optimized standalone screenshot..."
+        magick "$SCREENSHOTS_DIR/konda_v${VERSION}_standalone.png" -resize 800x600 -quality 85 "$SCREENSHOTS_DIR/konda_v${VERSION}_standalone_web.png"
+
+        # Copy to web directory if it exists
+        if [ -d "$SCRIPT_DIR/web" ]; then
+            cp "$SCREENSHOTS_DIR/konda_v${VERSION}_standalone_web.png" "$SCRIPT_DIR/web/konda_screenshot_optimized.png"
+            echo "✅ Updated web directory with optimized screenshot"
+        fi
+    else
+        echo "💡 Install ImageMagick for web optimization: brew install imagemagick"
+    fi
+fi
+
+echo ""
 echo "📸 Screenshot session complete!"
 echo "📁 Screenshots saved in: $SCREENSHOTS_DIR"
 echo ""
