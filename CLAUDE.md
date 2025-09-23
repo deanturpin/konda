@@ -1,4 +1,67 @@
-# Claude Code Development Log
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Essential Build Commands
+
+```bash
+make                    # Build and launch complete workstation
+make install           # Install AU + VST3 plugins to system
+make clean             # Clean build artifacts and shutdown processes
+make test-all          # Launch standalone app for testing
+make check-prereqs     # Verify all dependencies are installed
+make help              # Show all available commands
+```
+
+## Prerequisites
+
+- **CMake**: `brew install cmake`
+- **JUCE Framework**: `git clone https://github.com/juce-framework/JUCE.git ~/JUCE`
+- **Xcode Command Line Tools**: `xcode-select --install`
+
+## Project Architecture
+
+### Main Application: AudioWorkstation (Konda)
+
+The primary plugin/app combining all functionality:
+
+- **WorkstationProcessor.h/.cpp**: Core audio processing, synthesis engine, EQ, effects, FFT analysis
+- **WorkstationEditor.h/.cpp**: GUI with FFT-centered interface, multi-colored EQ visualization, parameter controls
+- **SineWaveVoice.h**: Polyphonic voice management (4 voices)
+- **SineWaveSound.h**: Sound definition for MIDI triggering
+
+### Legacy Components (Single-Purpose)
+
+- **Source/**: Original SineSynth plugin (basic synthesizer)
+- **ParametricEQ/**: Standalone EQ analyzer tool
+- **MidiInjector**: Command-line MIDI pattern generator
+- **MidiInjectorGUI/**: GUI version of MIDI injector
+
+### Key Technical Architecture
+
+**Audio Processing Chain**: MIDI Input → Polyphonic Synthesis → Filter → Distortion → 4-Band EQ → FFT Analysis
+
+**Real-time Visualization**: 1024-point FFT at 30fps with individual EQ band coloring (Red/Orange/Light Blue/Cyan)
+
+**Parameter Management**: JUCE ValueTreeState with atomic parameter access for thread-safe GUI updates
+
+**MIDI Intelligence**: 7 musical modes × 5 pattern types with smart randomization avoiding repetition
+
+## Plugin Formats and Installation
+
+- **Audio Unit**: Installs to `~/Library/Audio/Plug-Ins/Components/` (Logic Pro, GarageBand)
+- **VST3**: Installs to `~/Library/Audio/Plug-Ins/VST3/` (Universal DAW compatibility)
+- **Standalone**: Launches directly as macOS app
+
+## Development Notes
+
+- **Build System**: CMake with parallel builds (`-j$(NPROC)`)
+- **Company Name**: Currently empty string to avoid plugin menu hierarchy
+- **Plugin Codes**: Manufacturer `Trbo`, Plugin `Knda` for unique identification
+- **Architecture**: Universal Binary (Intel + Apple Silicon)
+- **Code Style**: Modern C++17, JUCE framework conventions
+
+## Claude Code Development Log
 
 This file documents the development journey of this audio production suite, created through Claude Code sessions.
 

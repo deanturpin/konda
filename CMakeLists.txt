@@ -165,7 +165,7 @@ target_compile_definitions(ParametricEQ PUBLIC
 
 # Create integrated Audio Workstation
 juce_add_plugin(AudioWorkstation
-    COMPANY_NAME "Turbeaux Sounds"
+    COMPANY_NAME ""
     PLUGIN_MANUFACTURER_CODE Trbo
     PLUGIN_CODE Knda
     FORMATS AU VST3 Standalone
