@@ -26,23 +26,66 @@ echo "📦 Copying Konda plugins..."
 cp -R "build/AudioWorkstation_artefacts/Release/AU/Konda.component" dmg_temp/
 cp -R "build/AudioWorkstation_artefacts/Release/VST3/Konda.vst3" dmg_temp/
 
-# Create installation helper script instead of symbolic links
+# Create installation helper apps instead of shell scripts
 echo "🔗 Creating installation shortcuts..."
 
-# Create a helper script that opens the correct folders
-cat > "dmg_temp/Open Audio Units Folder.command" << 'SCRIPT'
+# Create AppleScript applications which are more trusted by macOS
+mkdir -p "dmg_temp/Open Audio Units Folder.app/Contents/MacOS"
+mkdir -p "dmg_temp/Open Audio Units Folder.app/Contents/Resources"
+mkdir -p "dmg_temp/Open VST3 Folder.app/Contents/MacOS"
+mkdir -p "dmg_temp/Open VST3 Folder.app/Contents/Resources"
+
+# Create Info.plist for Audio Units app
+cat > "dmg_temp/Open Audio Units Folder.app/Contents/Info.plist" << 'PLIST'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleExecutable</key>
+    <string>Open Audio Units Folder</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.turbeaux.konda.au-opener</string>
+    <key>CFBundleName</key>
+    <string>Open Audio Units Folder</string>
+    <key>CFBundleVersion</key>
+    <string>1.0</string>
+</dict>
+</plist>
+PLIST
+
+# Create executable script for Audio Units
+cat > "dmg_temp/Open Audio Units Folder.app/Contents/MacOS/Open Audio Units Folder" << 'SCRIPT'
 #!/bin/bash
 open "$HOME/Library/Audio/Plug-Ins/Components"
 SCRIPT
 
-cat > "dmg_temp/Open VST3 Folder.command" << 'SCRIPT'
+# Create Info.plist for VST3 app
+cat > "dmg_temp/Open VST3 Folder.app/Contents/Info.plist" << 'PLIST'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleExecutable</key>
+    <string>Open VST3 Folder</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.turbeaux.konda.vst3-opener</string>
+    <key>CFBundleName</key>
+    <string>Open VST3 Folder</string>
+    <key>CFBundleVersion</key>
+    <string>1.0</string>
+</dict>
+</plist>
+PLIST
+
+# Create executable script for VST3
+cat > "dmg_temp/Open VST3 Folder.app/Contents/MacOS/Open VST3 Folder" << 'SCRIPT'
 #!/bin/bash
 open "$HOME/Library/Audio/Plug-Ins/VST3"
 SCRIPT
 
-# Make the scripts executable
-chmod +x "dmg_temp/Open Audio Units Folder.command"
-chmod +x "dmg_temp/Open VST3 Folder.command"
+# Make the executables runnable
+chmod +x "dmg_temp/Open Audio Units Folder.app/Contents/MacOS/Open Audio Units Folder"
+chmod +x "dmg_temp/Open VST3 Folder.app/Contents/MacOS/Open VST3 Folder"
 
 # Create README
 cat > dmg_temp/README.txt << 'README'
@@ -50,9 +93,9 @@ Konda v1.3.0 - Installation Instructions
 ========================================
 
 QUICK INSTALL:
-1. Double-click "Open Audio Units Folder.command"
+1. Double-click "Open Audio Units Folder" app
 2. Drag "Konda.component" into the opened folder
-3. Double-click "Open VST3 Folder.command"
+3. Double-click "Open VST3 Folder" app
 4. Drag "Konda.vst3" into the opened folder
 5. Restart your DAW
 
@@ -111,8 +154,8 @@ tell application "Finder"
         -- Position items
         set position of item "Konda.component" of container window to {120, 150}
         set position of item "Konda.vst3" of container window to {120, 250}
-        set position of item "Open Audio Units Folder.command" of container window to {450, 150}
-        set position of item "Open VST3 Folder.command" of container window to {450, 250}
+        set position of item "Open Audio Units Folder.app" of container window to {450, 150}
+        set position of item "Open VST3 Folder.app" of container window to {450, 250}
         set position of item "README.txt" of container window to {300, 350}
         
         update without registering applications
@@ -123,11 +166,18 @@ APPLESCRIPT
 
 # Unmount the DMG with force if needed
 echo "📤 Ejecting disk image..."
+sleep 2
 hdiutil detach "/Volumes/${VOLUME_NAME}" -force || true
+sleep 1
 
 # Convert to compressed read-only DMG
 echo "📦 Compressing disk image..."
-hdiutil convert "${TEMP_DMG}" -format UDZO -imagekey zlib-level=9 -o "${FINAL_DMG}"
+if [ -f "${TEMP_DMG}" ]; then
+    hdiutil convert "${TEMP_DMG}" -format UDZO -imagekey zlib-level=9 -o "${FINAL_DMG}"
+else
+    echo "❌ Temporary DMG not found!"
+    exit 1
+fi
 
 # Clean up
 rm -f "${TEMP_DMG}"
