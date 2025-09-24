@@ -150,6 +150,23 @@ dmg: install
 	@./create_drag_drop_dmg.sh
 	@echo "✅ DMG created: Konda_$$(git rev-parse --short HEAD)_Installer.dmg"
 
+# Create and publish a GitHub release with DMG
+release: dmg
+	@echo "🚀 Creating GitHub release..."
+	@GIT_HASH=$$(git rev-parse --short HEAD); \
+	DMG_FILE="Konda_$${GIT_HASH}_Installer.dmg"; \
+	if command -v gh >/dev/null 2>&1; then \
+		echo "📤 Creating release $${GIT_HASH}..."; \
+		gh release create "$${GIT_HASH}" \
+			--title "Konda Build $${GIT_HASH}" \
+			--notes "Automated release of Konda synthesizer with advanced synthesis features.\n\n**Features:**\n- Multiple waveforms (Sine, Sawtooth, Square, Triangle)\n- Multiple filter types (Lowpass, Highpass, Bandpass, Notch)\n- LFO modulation system\n- Detune control\n- 4-band parametric EQ\n- FFT spectrum analyzer\n\n**Download:** $${DMG_FILE}" \
+			"$${DMG_FILE}" || echo "Release might already exist"; \
+		echo "✅ Release published at: https://github.com/deanturpin/konda/releases/tag/$${GIT_HASH}"; \
+	else \
+		echo "⚠️  GitHub CLI not installed. Install with: brew install gh"; \
+		echo "📁 DMG ready for manual upload: $${DMG_FILE}"; \
+	fi
+
 # Audio Testing Targets
 test-audio: validate-au test-vst3
 	@echo "🎵 All audio tests passed!"
@@ -221,6 +238,7 @@ help:
 	@echo "  make shutdown     - Stop all running audio processes"
 	@echo "  make deploy       - Commit and push changes"
 	@echo "  make dmg          - Create DMG installer with git hash"
+	@echo "  make release      - Create DMG and publish GitHub release"
 	@echo "  make setup-guide  - Show audio routing setup instructions"
 	@echo "  make restart      - Quick shutdown, rebuild, and restart"
 	@echo "  make dev          - Development mode with auto-rebuild on file changes"
