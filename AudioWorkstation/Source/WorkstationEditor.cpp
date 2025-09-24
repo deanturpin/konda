@@ -51,6 +51,47 @@ WorkstationEditor::WorkstationEditor(WorkstationProcessor& p) : juce::AudioProce
     setupSlider(filterResonanceSlider, filterResonanceLabel, "Resonance", "filterResonance");
     filterResonanceSlider.setSkewFactor(0.5f); // Logarithmic scaling - more control in the sweet spot (0.1-2.0)
     setupSlider(distortionSlider, distortionLabel, "Distortion", "distortion");
+
+    // New synthesis controls
+    // Waveform selector
+    waveformLabel.setText("Waveform", juce::dontSendNotification);
+    waveformLabel.setJustificationType(juce::Justification::centredLeft);
+    waveformLabel.setFont(juce::FontOptions(12.0f));
+    addAndMakeVisible(waveformLabel);
+
+    waveformSelector.addItemList({"Sine", "Sawtooth", "Square", "Triangle"}, 1);
+    addAndMakeVisible(waveformSelector);
+    waveformAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
+        processor.getValueTreeState(), "waveform", waveformSelector);
+
+    // Filter type selector
+    filterTypeLabel.setText("Filter Type", juce::dontSendNotification);
+    filterTypeLabel.setJustificationType(juce::Justification::centredLeft);
+    filterTypeLabel.setFont(juce::FontOptions(12.0f));
+    addAndMakeVisible(filterTypeLabel);
+
+    filterTypeSelector.addItemList({"Lowpass", "Highpass", "Bandpass", "Notch"}, 1);
+    addAndMakeVisible(filterTypeSelector);
+    filterTypeAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
+        processor.getValueTreeState(), "filterType", filterTypeSelector);
+
+    // Detune slider
+    setupSlider(detuneSlider, detuneLabel, "Detune", "detune");
+
+    // LFO controls
+    setupSlider(lfoRateSlider, lfoRateLabel, "LFO Rate", "lfoRate");
+    setupSlider(lfoDepthSlider, lfoDepthLabel, "LFO Depth", "lfoDepth");
+
+    // LFO waveform selector
+    lfoWaveformLabel.setText("LFO Wave", juce::dontSendNotification);
+    lfoWaveformLabel.setJustificationType(juce::Justification::centredLeft);
+    lfoWaveformLabel.setFont(juce::FontOptions(12.0f));
+    addAndMakeVisible(lfoWaveformLabel);
+
+    lfoWaveformSelector.addItemList({"Sine", "Sawtooth", "Square", "Triangle"}, 1);
+    addAndMakeVisible(lfoWaveformSelector);
+    lfoWaveformAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
+        processor.getValueTreeState(), "lfoWaveform", lfoWaveformSelector);
     
     // EQ controls
     setupSlider(lowShelfFreqSlider, lowShelfLabel, "Low Shelf", "lowShelfFreq");
@@ -235,34 +276,56 @@ void WorkstationEditor::resized()
     // MIDI pattern component in remaining bottom strip  
     midiPattern->setBounds(bottomStrip.reduced(5));
     
-    // Right side: ALL controls (Synth + EQ) as horizontal sliders
-    auto rightStrip = bounds.removeFromRight(300);
+    // Right side: ALL controls (Synth + EQ) as horizontal sliders - increased width for better fit
+    auto rightStrip = bounds.removeFromRight(350);
     
     // Synth section header
     auto synthHeader = rightStrip.removeFromTop(25);
     synthLabel.setBounds(synthHeader.removeFromLeft(150));
     synthRandomizeButton.setBounds(synthHeader.removeFromRight(80).reduced(2));
     
-    // Synth controls (7 horizontal sliders stacked with labels)
-    auto synthControls = rightStrip.removeFromTop(170);
-    int sliderHeight = 22;
-    int spacing = 2;
-    int labelWidth = 80;
-    
+    // Synth controls (13 controls now - expanded from 7)
+    auto synthControls = rightStrip.removeFromTop(260); // Compact height for all controls
+    int sliderHeight = 18; // Reduced from 22
+    int spacing = 1; // Reduced from 2
+    int labelWidth = 75; // Slightly narrower labels
+
     auto setupSliderRow = [&](juce::Slider& slider, juce::Label& label) {
         auto row = synthControls.removeFromTop(sliderHeight);
         label.setBounds(row.removeFromLeft(labelWidth));
         slider.setBounds(row.reduced(2, 0));
         synthControls.removeFromTop(spacing);
     };
-    
+
+    auto setupComboRow = [&](juce::ComboBox& combo, juce::Label& label) {
+        auto row = synthControls.removeFromTop(sliderHeight);
+        label.setBounds(row.removeFromLeft(labelWidth));
+        combo.setBounds(row.reduced(2, 0));
+        synthControls.removeFromTop(spacing);
+    };
+
+    // Waveform and filter type at the top
+    setupComboRow(waveformSelector, waveformLabel);
+    setupComboRow(filterTypeSelector, filterTypeLabel);
+
+    // ADSR controls
     setupSliderRow(attackSlider, attackLabel);
     setupSliderRow(decaySlider, decayLabel);
     setupSliderRow(sustainSlider, sustainLabel);
     setupSliderRow(releaseSlider, releaseLabel);
+
+    // Filter controls
     setupSliderRow(filterCutoffSlider, filterCutoffLabel);
     setupSliderRow(filterResonanceSlider, filterResonanceLabel);
+
+    // New synthesis controls
+    setupSliderRow(detuneSlider, detuneLabel);
     setupSliderRow(distortionSlider, distortionLabel);
+
+    // LFO controls
+    setupSliderRow(lfoRateSlider, lfoRateLabel);
+    setupSliderRow(lfoDepthSlider, lfoDepthLabel);
+    setupComboRow(lfoWaveformSelector, lfoWaveformLabel);
     
     rightStrip.removeFromTop(10); // Section spacing
     
@@ -271,8 +334,8 @@ void WorkstationEditor::resized()
     eqLabel.setBounds(eqHeader.removeFromLeft(120));
     eqRandomizeButton.setBounds(eqHeader.removeFromRight(80).reduced(2));
     
-    // EQ controls (240px for 4 bands)
-    auto eqControls = rightStrip.removeFromTop(240);
+    // EQ controls (180px for 4 bands - compact layout)
+    auto eqControls = rightStrip.removeFromTop(180);
     
     // Since we don't have individual labels for freq/gain/Q, we'll create descriptive text via lambda
     auto setupEQRow = [&](juce::Slider& slider, juce::Label& label, const juce::String& text) {
@@ -330,8 +393,8 @@ void WorkstationEditor::resized()
     reverbLabel.setBounds(reverbHeader.removeFromLeft(80));
     reverbRandomizeButton.setBounds(reverbHeader.removeFromRight(80).reduced(2));
     
-    // Reverb controls (4 horizontal sliders - increased to 140px)  
-    auto reverbControls = rightStrip.removeFromTop(140);
+    // Reverb controls (4 horizontal sliders - compact)
+    auto reverbControls = rightStrip.removeFromTop(90);
     
     auto setupReverbRow = [&](juce::Slider& slider, juce::Label& label, const juce::String& text) {
         auto row = reverbControls.removeFromTop(sliderHeight);
@@ -358,19 +421,33 @@ void WorkstationEditor::resized()
 void WorkstationEditor::randomizeSynth()
 {
     auto& random = juce::Random::getSystemRandom();
-    
+
+    // Randomize waveform type (0-3: Sine, Saw, Square, Triangle)
+    waveformSelector.setSelectedItemIndex(random.nextInt(4));
+
+    // Randomize filter type (0-3: Lowpass, Highpass, Bandpass, Notch)
+    filterTypeSelector.setSelectedItemIndex(random.nextInt(4));
+
     // Randomize ADSR (keeping musical values)
     attackSlider.setValue(random.nextFloat() * 2.0f); // 0-2 seconds
     decaySlider.setValue(random.nextFloat() * 3.0f); // 0-3 seconds
     sustainSlider.setValue(0.1f + random.nextFloat() * 0.8f); // 0.1-0.9
     releaseSlider.setValue(random.nextFloat() * 4.0f); // 0-4 seconds
-    
+
     // Randomize filter (keeping reasonable values)
     filterCutoffSlider.setValue(100.0f + random.nextFloat() * 3000.0f); // 100-3100 Hz (musical range)
     filterResonanceSlider.setValue(0.1f + random.nextFloat() * 3.0f); // 0.1-3.1 (musical range)
-    
+
+    // Randomize detune for subtle to obvious detuning
+    detuneSlider.setValue(-25.0f + random.nextFloat() * 50.0f); // -25 to +25 cents
+
     // Randomize distortion (mild to heavy)
     distortionSlider.setValue(1.0f + random.nextFloat() * 5.0f); // 1.0-6.0
+
+    // Randomize LFO parameters
+    lfoRateSlider.setValue(0.1f + random.nextFloat() * 10.0f); // 0.1-10 Hz (musical range)
+    lfoDepthSlider.setValue(random.nextFloat() * 0.5f); // 0-0.5 (not too extreme)
+    lfoWaveformSelector.setSelectedItemIndex(random.nextInt(4)); // Random LFO waveform
 }
 
 void WorkstationEditor::randomizeEQ()

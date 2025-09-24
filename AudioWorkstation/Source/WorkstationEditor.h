@@ -459,6 +459,15 @@ private:
     juce::Slider filterCutoffSlider, filterResonanceSlider, distortionSlider;
     juce::Label attackLabel, decayLabel, sustainLabel, releaseLabel;
     juce::Label filterCutoffLabel, filterResonanceLabel, distortionLabel;
+
+    // New synthesis controls
+    juce::ComboBox waveformSelector, filterTypeSelector, lfoWaveformSelector;
+    juce::Label waveformLabel, filterTypeLabel, lfoWaveformLabel;
+    juce::Slider detuneSlider, lfoRateSlider, lfoDepthSlider;
+    juce::Label detuneLabel, lfoRateLabel, lfoDepthLabel;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> waveformAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> filterTypeAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> lfoWaveformAttachment;
     
     // EQ controls
     juce::Slider lowShelfFreqSlider, lowShelfGainSlider;

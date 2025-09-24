@@ -10,6 +10,9 @@ AU_PLUGIN = ~/Library/Audio/Plug-Ins/Components/SineSynth.component
 # Default target - build and run everything
 all: test-all
 
+# Quick rebuild and run - shortest command for development
+run: standalone
+
 # Check prerequisites
 check-prereqs:
 	@echo "🔍 Checking prerequisites..."
