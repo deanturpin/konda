@@ -13,6 +13,15 @@ make check-prereqs     # Verify all dependencies are installed
 make help              # Show all available commands
 ```
 
+## Web Platform Access
+
+**Try Konda instantly in your browser:** `web/index.html` - No installation required!
+
+- **Universal Access**: Works on all modern browsers (Chrome, Safari, Firefox, Edge)
+- **Progressive Web App**: Can be installed as a native-like app
+- **Mobile Compatible**: Touch-optimized for tablets and phones
+- **Hardware MIDI**: Connect USB/Bluetooth MIDI controllers (Chrome/Edge)
+
 ## Prerequisites
 
 - **CMake**: `brew install cmake`
@@ -498,7 +507,9 @@ analysis, and musical intelligence in a single professional interface.
   logarithmic scaling
 - **Session 6**: **~2,400+ lines** → Android support + context-aware UI + mobile
   optimization
-- **Estimated Value**: **$70,000+** professional cross-platform audio workstation
+- **Session 7**: **~2,500+ lines** → Web Audio platform + PWA + universal browser
+  access
+- **Estimated Value**: **$85,000+** professional multi-platform audio workstation
   (COCOMO estimate)
 
 ## DAW Plugin Format Compatibility
@@ -564,12 +575,13 @@ Web Browsers:
 
 ### Format Priority for Distribution
 
-1. **WebAssembly**: Universal access - no installation, instant demos, mobile
-   support
+1. **Web Audio API**: Universal browser access - no installation, instant demos,
+   mobile support, PWA capability
 2. **VST3**: Universal plugin compatibility (Windows/macOS/Linux)
 3. **Audio Unit**: Essential for Logic Pro users (macOS only)
-4. **AAX**: Pro Tools access but requires expensive PACE licensing
-5. **CLAP**: Future-proof open standard, growing adoption
+4. **WebAssembly**: Future native C++ in browser (experimental)
+5. **AAX**: Pro Tools access but requires expensive PACE licensing
+6. **CLAP**: Future-proof open standard, growing adoption
 
 ### JUCE Framework Support
 
@@ -609,7 +621,7 @@ processing, where every parameter change is instantly visible through
 revolutionary color-coded visualization that exceeds traditional plugin
 limitations.
 
-## Session 6 Developments - Mobile & Context-Aware UI
+## Session 6 Developments - Mobile & Web Platform Expansion
 
 ### Android Mobile Support 🤖
 
@@ -664,6 +676,34 @@ if (isStandalone) {
     addAndMakeVisible(midiDeviceSelector);
 }
 ```
+
+### Web Audio Platform
+
+- **Universal Access**: Complete web-based version using Web Audio API
+- **Progressive Web App**: Installable browser app with offline capability
+- **Web MIDI Support**: Hardware MIDI controller compatibility in Chrome/Edge
+- **Instant Demo**: No installation required - try directly in browser
+- **Mobile Responsive**: Touch-optimized interface for tablets and phones
+
+#### Web Features
+
+1. **Full Synthesis Engine**:
+   - 4-voice polyphonic Web Audio synthesis
+   - Real-time ADSR envelope processing
+   - Biquad filter implementation
+   - Soft-clipping distortion
+
+2. **Live Spectrum Analysis**:
+   - Canvas-based FFT visualization
+   - 1024-point frequency analysis
+   - Multi-colored EQ band display
+   - Professional frequency grid
+
+3. **Complete Control Interface**:
+   - Synthesizer parameter sliders
+   - 4-band parametric EQ
+   - MIDI pattern generator
+   - Virtual piano keyboard
 
 ### Android Build Instructions
 
