@@ -25,6 +25,8 @@ $(BUILD_DIR)/build.stamp: check-prereqs configure Source/**/* ParametricEQ/Sourc
 	@echo "🏗️  Building complete audio suite (using $(NPROC) cores)..."
 	@cd $(BUILD_DIR) && cmake --build . --config $(BUILD_CONFIG) -j$(NPROC)
 	@touch $(BUILD_DIR)/build.stamp
+	@echo "✅ Build complete! Launching Konda..."
+	@open "$(BUILD_DIR)/AudioWorkstation_artefacts/$(BUILD_CONFIG)/Standalone/Konda.app" || echo "⚠️  Could not auto-launch app"
 
 # Configure CMake build
 configure:
@@ -38,7 +40,9 @@ NPROC := $(shell sysctl -n hw.ncpu)
 # Build standalone app only
 standalone: configure
 	@echo "🏗️  Building standalone app (using $(NPROC) cores)..."
-	@cd $(BUILD_DIR) && cmake --build . --target SineSynth_Standalone --config $(BUILD_CONFIG) -j$(NPROC)
+	@cd $(BUILD_DIR) && cmake --build . --target AudioWorkstation_Standalone --config $(BUILD_CONFIG) -j$(NPROC)
+	@echo "✅ Build complete! Launching Konda..."
+	@open "$(BUILD_DIR)/AudioWorkstation_artefacts/$(BUILD_CONFIG)/Standalone/Konda.app" || echo "⚠️  Could not auto-launch app"
 
 # Build Audio Unit plugin only  
 plugin: configure

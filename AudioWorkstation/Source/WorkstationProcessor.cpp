@@ -16,6 +16,17 @@ WorkstationProcessor::WorkstationProcessor()
           std::make_unique<juce::AudioParameterFloat>("filterResonance", "Filter Resonance", 0.1f, 5.0f, 0.5f),
           std::make_unique<juce::AudioParameterFloat>("distortion", "Distortion", 1.0f, 10.0f, 1.0f),
 
+          // New synthesis parameters
+          std::make_unique<juce::AudioParameterChoice>("waveform", "Waveform",
+                                                      juce::StringArray{"Sine", "Sawtooth", "Square", "Triangle"}, 0),
+          std::make_unique<juce::AudioParameterChoice>("filterType", "Filter Type",
+                                                      juce::StringArray{"Lowpass", "Highpass", "Bandpass", "Notch"}, 0),
+          std::make_unique<juce::AudioParameterFloat>("detune", "Detune", -50.0f, 50.0f, 0.0f),
+          std::make_unique<juce::AudioParameterFloat>("lfoRate", "LFO Rate", 0.1f, 20.0f, 2.0f),
+          std::make_unique<juce::AudioParameterFloat>("lfoDepth", "LFO Depth", 0.0f, 1.0f, 0.0f),
+          std::make_unique<juce::AudioParameterChoice>("lfoWaveform", "LFO Waveform",
+                                                      juce::StringArray{"Sine", "Sawtooth", "Square", "Triangle"}, 0),
+
           // Octave control
           std::make_unique<juce::AudioParameterInt>("octave", "Octave", 2, 6, 4),
 
@@ -199,22 +210,40 @@ void WorkstationProcessor::updateSynthParameters()
     auto currentRelease = valueTreeState.getRawParameterValue("release")->load();
     auto currentFilterCutoff = valueTreeState.getRawParameterValue("filterCutoff")->load();
     auto currentFilterResonance = valueTreeState.getRawParameterValue("filterResonance")->load();
-    
+
+    // New synthesis parameters
+    auto currentWaveform = static_cast<int>(valueTreeState.getRawParameterValue("waveform")->load());
+    auto currentFilterType = static_cast<int>(valueTreeState.getRawParameterValue("filterType")->load());
+    auto currentDetune = valueTreeState.getRawParameterValue("detune")->load();
+    auto currentLfoRate = valueTreeState.getRawParameterValue("lfoRate")->load();
+    auto currentLfoDepth = valueTreeState.getRawParameterValue("lfoDepth")->load();
+    auto currentLfoWaveform = static_cast<int>(valueTreeState.getRawParameterValue("lfoWaveform")->load());
+
     bool parametersChanged = (currentAttack != lastAttack || currentDecay != lastDecay ||
                              currentSustain != lastSustain || currentRelease != lastRelease ||
                              currentFilterCutoff != lastFilterCutoff || currentFilterResonance != lastFilterResonance);
-    
-    if (parametersChanged)
+
+    // Always update synthesis parameters (they're lightweight)
+    for (auto i = 0; i < synth.getNumVoices(); ++i)
     {
-        for (auto i = 0; i < synth.getNumVoices(); ++i)
+        if (auto voice = dynamic_cast<SineWaveVoice*>(synth.getVoice(i)))
         {
-            if (auto voice = dynamic_cast<SineWaveVoice*>(synth.getVoice(i)))
+            if (parametersChanged)
             {
                 voice->setADSRParameters({currentAttack, currentDecay, currentSustain, currentRelease});
                 voice->setFilterParameters(currentFilterCutoff, currentFilterResonance);
             }
+
+            // Update new synthesis parameters
+            voice->setWaveformType(static_cast<WaveformType>(currentWaveform));
+            voice->setFilterType(static_cast<FilterType>(currentFilterType));
+            voice->setDetune(currentDetune);
+            voice->setLFOParameters(currentLfoRate, currentLfoDepth, static_cast<WaveformType>(currentLfoWaveform));
         }
-        
+    }
+
+    if (parametersChanged)
+    {
         lastAttack = currentAttack;
         lastDecay = currentDecay;
         lastSustain = currentSustain;
