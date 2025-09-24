@@ -5,14 +5,16 @@
 
 set -e
 
-VERSION="1.3.0"
+# Get git commit hash (short version)
+GIT_HASH=$(git rev-parse --short HEAD)
+VERSION="${GIT_HASH}"
 APP_NAME="Konda"
-DMG_NAME="Konda_v${VERSION}_Installer"
+DMG_NAME="Konda_${VERSION}_Installer"
 TEMP_DMG="temp_${DMG_NAME}.dmg"
 FINAL_DMG="${DMG_NAME}.dmg"
-VOLUME_NAME="Konda v${VERSION}"
+VOLUME_NAME="Konda ${VERSION}"
 
-echo "🎵 Creating Konda v${VERSION} Drag & Drop Installer..."
+echo "🎵 Creating Konda ${VERSION} Drag & Drop Installer..."
 
 # Clean up any existing build
 rm -f "${TEMP_DMG}" "${FINAL_DMG}"
@@ -88,8 +90,8 @@ chmod +x "dmg_temp/Open Audio Units Folder.app/Contents/MacOS/Open Audio Units F
 chmod +x "dmg_temp/Open VST3 Folder.app/Contents/MacOS/Open VST3 Folder"
 
 # Create README
-cat > dmg_temp/README.txt << 'README'
-Konda v1.3.0 - Installation Instructions
+cat > dmg_temp/README.txt << README
+Konda ${VERSION} - Installation Instructions
 ========================================
 
 QUICK INSTALL:
@@ -99,7 +101,7 @@ QUICK INSTALL:
 4. Drag "Konda.vst3" into the opened folder
 5. Restart your DAW
 
-WHAT'S NEW IN v1.3.0:
+WHAT'S NEW IN ${VERSION}:
 • Fixed drag & drop installer with proper folder access
 • Android app support with USB MIDI
 • Context-aware UI (adapts to plugin vs standalone)

@@ -144,6 +144,12 @@ clean: shutdown
 deploy:
 	git add -A && git commit -m "Auto-commit from make deploy 🤖" && git push
 
+# Create DMG installer with current git hash
+dmg: install
+	@echo "📦 Creating DMG installer with git hash..."
+	@./create_drag_drop_dmg.sh
+	@echo "✅ DMG created: Konda_$$(git rev-parse --short HEAD)_Installer.dmg"
+
 # Audio Testing Targets
 test-audio: validate-au test-vst3
 	@echo "🎵 All audio tests passed!"
@@ -214,6 +220,7 @@ help:
 	@echo "  make clean        - Remove all build artifacts (includes shutdown)"
 	@echo "  make shutdown     - Stop all running audio processes"
 	@echo "  make deploy       - Commit and push changes"
+	@echo "  make dmg          - Create DMG installer with git hash"
 	@echo "  make setup-guide  - Show audio routing setup instructions"
 	@echo "  make restart      - Quick shutdown, rebuild, and restart"
 	@echo "  make dev          - Development mode with auto-rebuild on file changes"
