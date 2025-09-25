@@ -28,12 +28,23 @@ echo "📦 Copying Konda plugins..."
 cp -R "build/AudioWorkstation_artefacts/Release/AU/Konda.component" dmg_temp/
 cp -R "build/AudioWorkstation_artefacts/Release/VST3/Konda.vst3" dmg_temp/
 
-# Create symbolic links to the plugin folders - much simpler and works!
-echo "🔗 Creating folder links..."
+# Create macOS aliases to the plugin folders for proper drag-and-drop
+echo "🔗 Creating folder aliases..."
 
-# Create aliases/symbolic links that actually work
-ln -s ~/Library/Audio/Plug-Ins/Components "dmg_temp/ Components (AU)"
-ln -s ~/Library/Audio/Plug-Ins/VST3 "dmg_temp/ VST3"
+# Create proper macOS aliases using AppleScript (these work better for drag-and-drop)
+osascript << ALIAS_SCRIPT
+tell application "Finder"
+    set componentsFolder to (path to library folder from user domain as string) & "Audio:Plug-Ins:Components:"
+    set vst3Folder to (path to library folder from user domain as string) & "Audio:Plug-Ins:VST3:"
+    set dmgTempPath to POSIX file "$(pwd)/dmg_temp" as alias
+
+    -- Create alias to Components folder
+    make alias file to folder componentsFolder at dmgTempPath with properties {name:" Components (AU)"}
+
+    -- Create alias to VST3 folder
+    make alias file to folder vst3Folder at dmgTempPath with properties {name:" VST3"}
+end tell
+ALIAS_SCRIPT
 
 # Create README
 cat > dmg_temp/README.txt << README
