@@ -159,7 +159,7 @@ release: dmg
 		echo "📤 Creating release $${GIT_HASH}..."; \
 		gh release create "$${GIT_HASH}" \
 			--title "Konda Build $${GIT_HASH}" \
-			--notes "Automated release of Konda synthesizer with advanced synthesis features.\n\n**Features:**\n- Multiple waveforms (Sine, Sawtooth, Square, Triangle)\n- Multiple filter types (Lowpass, Highpass, Bandpass, Notch)\n- LFO modulation system\n- Detune control\n- 4-band parametric EQ\n- FFT spectrum analyzer\n\n**Download:** $${DMG_FILE}" \
+			--notes $$'Automated release of Konda synthesizer with advanced synthesis features.\n\n**Features:**\n- Multiple waveforms (Sine, Sawtooth, Square, Triangle)\n- Multiple filter types (Lowpass, Highpass, Bandpass, Notch)\n- LFO modulation system\n- 4-band parametric EQ\n- FFT spectrum analyzer\n\n**Download:** '"$${DMG_FILE}" \
 			"$${DMG_FILE}" || echo "Release might already exist"; \
 		echo "✅ Release published at: https://github.com/deanturpin/konda/releases/tag/$${GIT_HASH}"; \
 	else \
