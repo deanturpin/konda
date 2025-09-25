@@ -133,7 +133,7 @@ WorkstationEditor::WorkstationEditor(WorkstationProcessor& p) : juce::AudioProce
     });
     
     // Setup MIDI device selector (only visible in standalone mode)
-    bool isStandalone = processor.wrapperType == juce::AudioProcessor::wrapperType_Standalone;
+    // (isStandalone already defined above)
 
     midiDeviceLabel.setText("MIDI Device:", juce::dontSendNotification);
     midiDeviceLabel.setJustificationType(juce::Justification::centredLeft);
