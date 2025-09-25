@@ -463,8 +463,8 @@ private:
     // New synthesis controls
     juce::ComboBox waveformSelector, filterTypeSelector, lfoWaveformSelector;
     juce::Label waveformLabel, filterTypeLabel, lfoWaveformLabel;
-    juce::Slider detuneSlider, lfoRateSlider, lfoDepthSlider;
-    juce::Label detuneLabel, lfoRateLabel, lfoDepthLabel;
+    juce::Slider lfoRateSlider, lfoDepthSlider;
+    juce::Label lfoRateLabel, lfoDepthLabel;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> waveformAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> filterTypeAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> lfoWaveformAttachment;

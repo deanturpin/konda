@@ -98,10 +98,9 @@ public:
                 {
                     auto adsrValue = adsr.getNextSample();
 
-                    // Generate waveform with optional detune and LFO modulation
+                    // Generate waveform with LFO modulation
                     auto oscillatorSample = generateWaveform();
                     auto lfoModulation = generateLFO();
-                    auto detuneOffset = detune * 0.01; // Convert cents to ratio
 
                     auto rawSample = (float) (oscillatorSample * level * adsrValue * (1.0 + lfoModulation * lfoDepth));
 
@@ -143,7 +142,6 @@ public:
 
     void setWaveformType(WaveformType type) { waveformType = type; }
     void setFilterType(FilterType type) { filterType = type; updateFilter(); }
-    void setDetune(float cents) { detune = cents; }
     void setLFOParameters(float rate, float depth, WaveformType shape)
     {
         lfoRate = rate;
@@ -185,7 +183,6 @@ private:
     // Synthesis parameters
     WaveformType waveformType = WaveformType::Sine;
     FilterType filterType = FilterType::Lowpass;
-    float detune = 0.0f; // In cents
 
     // LFO parameters
     float lfoRate = 2.0f; // Hz
@@ -222,31 +219,27 @@ private:
 
     double generateWaveform()
     {
-        // Apply detune
-        double detuneMultiplier = std::pow(2.0, detune / 1200.0); // Convert cents to frequency ratio
-        double currentAngleWithDetune = currentAngle * detuneMultiplier;
-
         switch (waveformType)
         {
             case WaveformType::Sine:
-                return std::sin(currentAngleWithDetune);
+                return std::sin(currentAngle);
 
             case WaveformType::Sawtooth:
-                return 2.0 * (currentAngleWithDetune / (2.0 * juce::MathConstants<double>::pi) -
-                             std::floor(currentAngleWithDetune / (2.0 * juce::MathConstants<double>::pi) + 0.5));
+                return 2.0 * (currentAngle / (2.0 * juce::MathConstants<double>::pi) -
+                             std::floor(currentAngle / (2.0 * juce::MathConstants<double>::pi) + 0.5));
 
             case WaveformType::Square:
-                return std::sin(currentAngleWithDetune) > 0.0 ? 1.0 : -1.0;
+                return std::sin(currentAngle) > 0.0 ? 1.0 : -1.0;
 
             case WaveformType::Triangle:
             {
-                double phase = currentAngleWithDetune / (2.0 * juce::MathConstants<double>::pi);
+                double phase = currentAngle / (2.0 * juce::MathConstants<double>::pi);
                 phase = phase - std::floor(phase); // Normalize to 0-1
                 return phase < 0.5 ? (4.0 * phase - 1.0) : (3.0 - 4.0 * phase);
             }
 
             default:
-                return std::sin(currentAngleWithDetune);
+                return std::sin(currentAngle);
         }
     }
 

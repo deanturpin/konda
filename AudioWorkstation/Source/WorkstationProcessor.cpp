@@ -21,7 +21,6 @@ WorkstationProcessor::WorkstationProcessor()
                                                       juce::StringArray{"Sine", "Sawtooth", "Square", "Triangle"}, 0),
           std::make_unique<juce::AudioParameterChoice>("filterType", "Filter Type",
                                                       juce::StringArray{"Lowpass", "Highpass", "Bandpass", "Notch"}, 0),
-          std::make_unique<juce::AudioParameterFloat>("detune", "Detune", -50.0f, 50.0f, 0.0f),
           std::make_unique<juce::AudioParameterFloat>("lfoRate", "LFO Rate", 0.1f, 20.0f, 2.0f),
           std::make_unique<juce::AudioParameterFloat>("lfoDepth", "LFO Depth", 0.0f, 1.0f, 0.0f),
           std::make_unique<juce::AudioParameterChoice>("lfoWaveform", "LFO Waveform",
@@ -214,7 +213,6 @@ void WorkstationProcessor::updateSynthParameters()
     // New synthesis parameters
     auto currentWaveform = static_cast<int>(valueTreeState.getRawParameterValue("waveform")->load());
     auto currentFilterType = static_cast<int>(valueTreeState.getRawParameterValue("filterType")->load());
-    auto currentDetune = valueTreeState.getRawParameterValue("detune")->load();
     auto currentLfoRate = valueTreeState.getRawParameterValue("lfoRate")->load();
     auto currentLfoDepth = valueTreeState.getRawParameterValue("lfoDepth")->load();
     auto currentLfoWaveform = static_cast<int>(valueTreeState.getRawParameterValue("lfoWaveform")->load());
@@ -237,8 +235,7 @@ void WorkstationProcessor::updateSynthParameters()
             // Update new synthesis parameters
             voice->setWaveformType(static_cast<WaveformType>(currentWaveform));
             voice->setFilterType(static_cast<FilterType>(currentFilterType));
-            voice->setDetune(currentDetune);
-            voice->setLFOParameters(currentLfoRate, currentLfoDepth, static_cast<WaveformType>(currentLfoWaveform));
+                voice->setLFOParameters(currentLfoRate, currentLfoDepth, static_cast<WaveformType>(currentLfoWaveform));
         }
     }
 

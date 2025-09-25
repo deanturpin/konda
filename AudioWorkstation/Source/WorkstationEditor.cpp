@@ -18,10 +18,16 @@ WorkstationEditor::WorkstationEditor(WorkstationProcessor& p) : juce::AudioProce
     reverbLabel.setJustificationType(juce::Justification::centred);
     addAndMakeVisible(reverbLabel);
     
-    midiLabel.setText("MIDI PATTERN GENERATOR", juce::dontSendNotification);
-    midiLabel.setFont(juce::FontOptions(16.0f).withStyle("bold"));
-    midiLabel.setJustificationType(juce::Justification::centred);
-    addAndMakeVisible(midiLabel);
+    // Check if running as standalone or plugin
+    bool isStandalone = processor.wrapperType == juce::AudioProcessor::wrapperType_Standalone;
+
+    // Only show MIDI Pattern Generator in standalone mode
+    if (isStandalone) {
+        midiLabel.setText("MIDI PATTERN GENERATOR", juce::dontSendNotification);
+        midiLabel.setFont(juce::FontOptions(16.0f).withStyle("bold"));
+        midiLabel.setJustificationType(juce::Justification::centred);
+        addAndMakeVisible(midiLabel);
+    }
     
     // Synth controls setup - using horizontal linear sliders
     auto setupSlider = [this](juce::Slider& slider, juce::Label& label, const juce::String& text, const juce::String& paramId)
@@ -75,8 +81,6 @@ WorkstationEditor::WorkstationEditor(WorkstationProcessor& p) : juce::AudioProce
     filterTypeAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
         processor.getValueTreeState(), "filterType", filterTypeSelector);
 
-    // Detune slider
-    setupSlider(detuneSlider, detuneLabel, "Detune", "detune");
 
     // LFO controls
     setupSlider(lfoRateSlider, lfoRateLabel, "LFO Rate", "lfoRate");
@@ -196,39 +200,41 @@ WorkstationEditor::WorkstationEditor(WorkstationProcessor& p) : juce::AudioProce
     midiRandomizeButton.setColour(juce::TextButton::buttonColourId, juce::Colours::darkorange);
     globalRandomizeButton.setColour(juce::TextButton::buttonColourId, juce::Colours::purple);
 
-    // Octave radio buttons setup
-    octaveLabel.setText("OCTAVE", juce::dontSendNotification);
-    octaveLabel.setFont(juce::FontOptions(12.0f).withStyle("bold"));
-    octaveLabel.setJustificationType(juce::Justification::centred);
-    addAndMakeVisible(octaveLabel);
+    // Octave radio buttons setup (only in standalone mode)
+    if (isStandalone) {
+        octaveLabel.setText("OCTAVE", juce::dontSendNotification);
+        octaveLabel.setFont(juce::FontOptions(12.0f).withStyle("bold"));
+        octaveLabel.setJustificationType(juce::Justification::centred);
+        addAndMakeVisible(octaveLabel);
 
-    octave2Button.setButtonText("2");
-    octave3Button.setButtonText("3");
-    octave4Button.setButtonText("4");
-    octave5Button.setButtonText("5");
-    octave6Button.setButtonText("6");
+        octave2Button.setButtonText("2");
+        octave3Button.setButtonText("3");
+        octave4Button.setButtonText("4");
+        octave5Button.setButtonText("5");
+        octave6Button.setButtonText("6");
 
-    octave2Button.setRadioGroupId(1);
-    octave3Button.setRadioGroupId(1);
-    octave4Button.setRadioGroupId(1);
-    octave5Button.setRadioGroupId(1);
-    octave6Button.setRadioGroupId(1);
+        octave2Button.setRadioGroupId(1);
+        octave3Button.setRadioGroupId(1);
+        octave4Button.setRadioGroupId(1);
+        octave5Button.setRadioGroupId(1);
+        octave6Button.setRadioGroupId(1);
 
-    // Set default octave (4)
-    octave4Button.setToggleState(true, juce::dontSendNotification);
+        // Set default octave (4)
+        octave4Button.setToggleState(true, juce::dontSendNotification);
 
-    // Octave change callbacks
-    octave2Button.onClick = [this] { processor.setOctave(2); };
-    octave3Button.onClick = [this] { processor.setOctave(3); };
-    octave4Button.onClick = [this] { processor.setOctave(4); };
-    octave5Button.onClick = [this] { processor.setOctave(5); };
-    octave6Button.onClick = [this] { processor.setOctave(6); };
+        // Octave change callbacks
+        octave2Button.onClick = [this] { processor.setOctave(2); };
+        octave3Button.onClick = [this] { processor.setOctave(3); };
+        octave4Button.onClick = [this] { processor.setOctave(4); };
+        octave5Button.onClick = [this] { processor.setOctave(5); };
+        octave6Button.onClick = [this] { processor.setOctave(6); };
 
-    addAndMakeVisible(octave2Button);
-    addAndMakeVisible(octave3Button);
-    addAndMakeVisible(octave4Button);
-    addAndMakeVisible(octave5Button);
-    addAndMakeVisible(octave6Button);
+        addAndMakeVisible(octave2Button);
+        addAndMakeVisible(octave3Button);
+        addAndMakeVisible(octave4Button);
+        addAndMakeVisible(octave5Button);
+        addAndMakeVisible(octave6Button);
+    }
 
     setSize(1200, 800);
     setResizable(true, true);
@@ -246,7 +252,7 @@ void WorkstationEditor::resized()
     
     // Bottom control strip: MIDI + Global controls
     bool isStandalone = processor.wrapperType == juce::AudioProcessor::wrapperType_Standalone;
-    auto bottomStripHeight = isStandalone ? 150 : 125; // Less height needed when MIDI device controls hidden
+    auto bottomStripHeight = isStandalone ? 150 : 90; // Much less height needed when MIDI controls hidden
     auto bottomStrip = bounds.removeFromBottom(bottomStripHeight);
     auto midiHeader = bottomStrip.removeFromTop(25);
     midiLabel.setBounds(midiHeader.removeFromLeft(150));
@@ -261,17 +267,19 @@ void WorkstationEditor::resized()
         midiDeviceSelector.setBounds(midiDeviceRow.reduced(2));
     }
 
-    // Octave selection row
-    auto octaveRow = bottomStrip.removeFromTop(30);
-    octaveLabel.setBounds(octaveRow.removeFromLeft(60));
-    int buttonWidth = 35;
-    octave2Button.setBounds(octaveRow.removeFromLeft(buttonWidth).reduced(2));
-    octave3Button.setBounds(octaveRow.removeFromLeft(buttonWidth).reduced(2));
-    octave4Button.setBounds(octaveRow.removeFromLeft(buttonWidth).reduced(2));
-    octave5Button.setBounds(octaveRow.removeFromLeft(buttonWidth).reduced(2));
-    octave6Button.setBounds(octaveRow.removeFromLeft(buttonWidth).reduced(2));
+    // Octave selection row (only in standalone mode)
+    if (isStandalone) {
+        auto octaveRow = bottomStrip.removeFromTop(30);
+        octaveLabel.setBounds(octaveRow.removeFromLeft(60));
+        int buttonWidth = 35;
+        octave2Button.setBounds(octaveRow.removeFromLeft(buttonWidth).reduced(2));
+        octave3Button.setBounds(octaveRow.removeFromLeft(buttonWidth).reduced(2));
+        octave4Button.setBounds(octaveRow.removeFromLeft(buttonWidth).reduced(2));
+        octave5Button.setBounds(octaveRow.removeFromLeft(buttonWidth).reduced(2));
+        octave6Button.setBounds(octaveRow.removeFromLeft(buttonWidth).reduced(2));
 
-    bottomStrip.removeFromTop(5); // Small gap
+        bottomStrip.removeFromTop(5); // Small gap
+    }
     
     // MIDI pattern component in remaining bottom strip  
     midiPattern->setBounds(bottomStrip.reduced(5));
@@ -319,7 +327,6 @@ void WorkstationEditor::resized()
     setupSliderRow(filterResonanceSlider, filterResonanceLabel);
 
     // New synthesis controls
-    setupSliderRow(detuneSlider, detuneLabel);
     setupSliderRow(distortionSlider, distortionLabel);
 
     // LFO controls
@@ -438,8 +445,6 @@ void WorkstationEditor::randomizeSynth()
     filterCutoffSlider.setValue(100.0f + random.nextFloat() * 3000.0f); // 100-3100 Hz (musical range)
     filterResonanceSlider.setValue(0.1f + random.nextFloat() * 3.0f); // 0.1-3.1 (musical range)
 
-    // Randomize detune for subtle to obvious detuning
-    detuneSlider.setValue(-25.0f + random.nextFloat() * 50.0f); // -25 to +25 cents
 
     // Randomize distortion (mild to heavy)
     distortionSlider.setValue(1.0f + random.nextFloat() * 5.0f); // 1.0-6.0
