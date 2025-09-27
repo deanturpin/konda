@@ -13,14 +13,9 @@ make check-prereqs     # Verify all dependencies are installed
 make help              # Show all available commands
 ```
 
-## Web Platform Access
+## Target Platform
 
-**Try Konda instantly in your browser:** `web/index.html` - No installation required!
-
-- **Universal Access**: Works on all modern browsers (Chrome, Safari, Firefox, Edge)
-- **Progressive Web App**: Can be installed as a native-like app
-- **Mobile Compatible**: Touch-optimized for tablets and phones
-- **Hardware MIDI**: Connect USB/Bluetooth MIDI controllers (Chrome/Edge)
+Konda is designed exclusively for **macOS** as either a **Logic Pro plugin** or **standalone application**.
 
 ## Prerequisites
 
@@ -59,7 +54,6 @@ The primary plugin/app combining all functionality:
 ## Plugin Formats and Installation
 
 - **Audio Unit**: Installs to `~/Library/Audio/Plug-Ins/Components/` (Logic Pro, GarageBand)
-- **VST3**: Installs to `~/Library/Audio/Plug-Ins/VST3/` (Universal DAW compatibility)
 - **Standalone**: Launches directly as macOS app
 
 ## Development Notes
@@ -505,90 +499,15 @@ analysis, and musical intelligence in a single professional interface.
   restoration
 - **Session 5**: **2,356 lines** → Improved filter/resonance control with
   logarithmic scaling
-- **Session 6**: **~2,400+ lines** → Android support + context-aware UI + mobile
-  optimization
-- **Session 7**: **~2,500+ lines** → Web Audio platform + PWA + universal browser
-  access
-- **Estimated Value**: **$85,000+** professional multi-platform audio workstation
+- **Estimated Value**: **$35,000+** professional macOS audio workstation
   (COCOMO estimate)
 
-## DAW Plugin Format Compatibility
+## Plugin Format Focus
 
-### Operating System → Plugin Format Relationships
+**Primary Format**: Audio Unit (AU) - Native Logic Pro plugin format
+**Secondary Format**: Standalone macOS application
 
-```text
-macOS:
-├── Audio Unit (AU) ←─ Native Apple format
-│   ├── Logic Pro ✓
-│   ├── GarageBand ✓
-│   └── MainStage ✓
-├── VST3 ←─ Cross-platform industry standard
-│   ├── Ableton Live ✓
-│   ├── Studio One ✓
-│   ├── Cubase ✓
-│   ├── Reaper ✓
-│   └── FL Studio ✓
-└── AAX ←─ Avid Pro Tools only
-    └── Pro Tools ✓ (requires PACE licensing)
-
-Windows:
-├── VST3 ←─ Primary format (Steinberg)
-│   ├── Cubase ✓
-│   ├── Studio One ✓
-│   ├── Ableton Live ✓
-│   ├── Reaper ✓
-│   ├── FL Studio ✓
-│   └── Bitwig Studio ✓
-├── AAX ←─ Pro Tools only
-│   └── Pro Tools ✓ (requires PACE licensing)
-└── CLAP ←─ New open standard
-    ├── Bitwig Studio ✓
-    └── Reaper ✓ (beta support)
-
-Linux:
-├── VST3 ←─ Growing support
-│   ├── Reaper ✓
-│   ├── Bitwig Studio ✓
-│   └── Ardour ✓
-├── CLAP ←─ Native Linux support
-│   ├── Bitwig Studio ✓
-│   └── Reaper ✓
-└── LV2 ←─ Linux native
-    ├── Ardour ✓
-    └── Qtractor ✓
-
-Web Browsers:
-├── WebAssembly (WASM) ←─ Universal compatibility
-│   ├── Chrome ✓ (Web Audio API + MIDI)
-│   ├── Firefox ✓ (Web Audio API)
-│   ├── Safari ✓ (WebKit Audio)
-│   └── Edge ✓ (Chromium-based)
-├── Progressive Web App (PWA) ←─ App-like experience
-│   ├── Offline capability ✓
-│   ├── Mobile responsive ✓
-│   └── No installation required ✓
-└── Web MIDI API ←─ Hardware controller support
-    ├── Chrome ✓
-    ├── Edge ✓
-    └── Opera ✓
-```
-
-### Format Priority for Distribution
-
-1. **Web Audio API**: Universal browser access - no installation, instant demos,
-   mobile support, PWA capability
-2. **VST3**: Universal plugin compatibility (Windows/macOS/Linux)
-3. **Audio Unit**: Essential for Logic Pro users (macOS only)
-4. **WebAssembly**: Future native C++ in browser (experimental)
-5. **AAX**: Pro Tools access but requires expensive PACE licensing
-6. **CLAP**: Future-proof open standard, growing adoption
-
-### JUCE Framework Support
-
-- **Full Support**: VST3, AU, AAX, Standalone
-- **Growing**: CLAP support in JUCE 7+
-- **Experimental**: WebAssembly export for browser deployment
-- **Cross-compilation**: Single codebase builds all formats
+Konda is optimised specifically for the Logic Pro ecosystem and macOS audio workflow.
 
 ## Key Innovation Legacy
 
@@ -621,38 +540,10 @@ processing, where every parameter change is instantly visible through
 revolutionary color-coded visualization that exceeds traditional plugin
 limitations.
 
-## Session 6 Developments - Mobile & Web Platform Expansion
-
-### Android Mobile Support 🤖
-
-- **User Request**: "make a phone app with USB-C MIDI keyboard support"
-- **Platform**: Android (user clarified "I'm only Android!")
-- **Implementation**: Created Android build configuration with USB MIDI host
-
-#### Android Technical Features
-
-1. **USB MIDI Host Mode**:
-   - Direct USB-C connection to MIDI keyboards
-   - Auto-detection of USB MIDI Class devices
-   - Low-latency audio via OpenSL ES
-   - No additional drivers required
-
-2. **Build Configuration**:
-   - Android NDK for native C++ performance
-   - CMake build system integration
-   - Minimum Android 6.0 (API 23) for USB MIDI
-   - Support for ARM and x86 architectures
-
-3. **Mobile-Optimized**:
-   - Landscape orientation for control layout
-   - Touch-optimized sliders and buttons
-   - Full-screen immersive mode
-   - Responsive FFT visualization
-
 ### Context-Aware Plugin Interface
 
-- **Smart Detection**: "does the app know when it's a plugin?"
-- **Implementation**: UI adapts based on runtime context
+- **Smart Detection**: UI adapts based on runtime context
+- **Implementation**: Detects plugin vs standalone mode
 
 #### Standalone Mode Shows
 
@@ -660,10 +551,10 @@ limitations.
 - MIDI device selector with refresh button
 - Full 150px bottom control area
 
-#### Plugin Mode (AU/VST3) Hides
+#### Plugin Mode (AU) Hides
 
-- Play button (DAW controls transport)
-- MIDI device selector (DAW handles routing)
+- Play button (Logic Pro controls transport)
+- MIDI device selector (Logic Pro handles routing)
 - Reduced to 125px bottom area
 
 #### Technical Implementation
@@ -676,49 +567,6 @@ if (isStandalone) {
     addAndMakeVisible(midiDeviceSelector);
 }
 ```
-
-### Web Audio Platform
-
-- **Universal Access**: Complete web-based version using Web Audio API
-- **Progressive Web App**: Installable browser app with offline capability
-- **Web MIDI Support**: Hardware MIDI controller compatibility in Chrome/Edge
-- **Instant Demo**: No installation required - try directly in browser
-- **Mobile Responsive**: Touch-optimized interface for tablets and phones
-
-#### Web Features
-
-1. **Full Synthesis Engine**:
-   - 4-voice polyphonic Web Audio synthesis
-   - Real-time ADSR envelope processing
-   - Biquad filter implementation
-   - Soft-clipping distortion
-
-2. **Live Spectrum Analysis**:
-   - Canvas-based FFT visualization
-   - 1024-point frequency analysis
-   - Multi-colored EQ band display
-   - Professional frequency grid
-
-3. **Complete Control Interface**:
-   - Synthesizer parameter sliders
-   - 4-band parametric EQ
-   - MIDI pattern generator
-   - Virtual piano keyboard
-
-### Android Build Instructions
-
-```bash
-./build_android.sh  # Creates Android project structure
-# Then open android/ folder in Android Studio
-# Build APK with USB MIDI support
-```
-
-### USB MIDI Connection (Android)
-
-1. Connect MIDI keyboard via USB-C adapter
-2. Grant USB permission when prompted
-3. Konda auto-detects MIDI devices
-4. Full polyphony and effects processing
 
 ## Session 5 Developments - Streamlined Excellence
 
@@ -829,10 +677,8 @@ if (isStandalone) {
 
 - **Total Development**: ~1,200+ lines across 5 sessions
 - **COCOMO Value**: Estimated $35k+ professional audio workstation
-- **Plugin Formats**: AU (Logic Pro) + VST3 (Universal DAW compatibility)
+- **Plugin Format**: Audio Unit (Logic Pro)
 - **Platform**: macOS 10.13+ (Intel + Apple Silicon)
 - **Distribution**: Professional drag-and-drop installer
 
-The TURBEAUX SOUNDS workstation has evolved into a streamlined, functional audio
-plugin that combines visual feedback with practical controls, developed through
-systematic refinement over 5 sessions.
+The TURBEAUX SOUNDS workstation has evolved into a streamlined Logic Pro plugin that combines visual feedback with practical controls, developed through systematic refinement.
