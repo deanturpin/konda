@@ -1,17 +1,20 @@
 #!/bin/bash
 
 # Konda DMG Creator
-# Creates a professional macOS disk image with installer
+# Creates a simple DMG with installation script
 
 set -e
 
-VERSION="1.2.0"
+# Get git commit hash (short version)
+GIT_HASH=$(git rev-parse --short HEAD)
+VERSION="${GIT_HASH}"
 APP_NAME="Konda"
-DMG_NAME="Konda_v${VERSION}_Installer"
+DMG_NAME="Konda_${VERSION}_Installer"
 TEMP_DMG="temp_${DMG_NAME}.dmg"
 FINAL_DMG="${DMG_NAME}.dmg"
+VOLUME_NAME="Konda ${VERSION}"
 
-echo "🎵 Creating Konda v${VERSION} Installer DMG..."
+echo "🎵 Creating Konda ${VERSION} Installer..."
 
 # Clean up any existing build
 rm -f "${TEMP_DMG}" "${FINAL_DMG}"
@@ -25,167 +28,143 @@ echo "📦 Copying Konda plugins..."
 cp -R "build/AudioWorkstation_artefacts/Release/AU/Konda.component" dmg_temp/
 cp -R "build/AudioWorkstation_artefacts/Release/VST3/Konda.vst3" dmg_temp/
 
-# Create installer script
-cat > dmg_temp/Install_Konda.command << 'EOF'
+# Create installation script for DMG
+cat > dmg_temp/Install_Konda.command << 'INSTALL_SCRIPT'
 #!/bin/bash
 
-# Konda Installer Script
-# Installs both Audio Unit and VST3 plugins
+# Konda Installation Script
+# Double-click this file to install Konda plugins
 
-echo "🎵 Installing Konda by Turbeaux Sounds..."
+APP_NAME="Konda"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+AU_DEST="$HOME/Library/Audio/Plug-Ins/Components"
+VST3_DEST="$HOME/Library/Audio/Plug-Ins/VST3"
+
+echo ""
+echo "🎵 Installing ${APP_NAME}..."
 echo ""
 
-# Get the directory of this script
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
 # Create plugin directories if they don't exist
-mkdir -p ~/Library/Audio/Plug-Ins/Components/
-mkdir -p ~/Library/Audio/Plug-Ins/VST3/
+mkdir -p "${AU_DEST}"
+mkdir -p "${VST3_DEST}"
 
 # Install Audio Unit
-echo "📦 Installing Audio Unit..."
-if cp -R "$SCRIPT_DIR/Konda.component" ~/Library/Audio/Plug-Ins/Components/; then
-    echo "✅ Audio Unit installed successfully"
+if [ -d "${SCRIPT_DIR}/Konda.component" ]; then
+    echo "📦 Installing Audio Unit (Logic Pro)..."
+    cp -R "${SCRIPT_DIR}/Konda.component" "${AU_DEST}/"
+    xattr -cr "${AU_DEST}/Konda.component"
+    echo "✅ Audio Unit installed"
 else
-    echo "❌ Failed to install Audio Unit"
-    exit 1
+    echo "⚠️  Audio Unit not found"
 fi
 
 # Install VST3
-echo "📦 Installing VST3..."
-if cp -R "$SCRIPT_DIR/Konda.vst3" ~/Library/Audio/Plug-Ins/VST3/; then
-    echo "✅ VST3 installed successfully"
+if [ -d "${SCRIPT_DIR}/Konda.vst3" ]; then
+    echo "📦 Installing VST3..."
+    cp -R "${SCRIPT_DIR}/Konda.vst3" "${VST3_DEST}/"
+    xattr -cr "${VST3_DEST}/Konda.vst3"
+    echo "✅ VST3 installed"
 else
-    echo "❌ Failed to install VST3"
-    exit 1
+    echo "⚠️  VST3 not found"
 fi
 
 echo ""
-echo "🎉 Konda installed successfully!"
+echo "🎉 Installation complete!"
 echo ""
-echo "To use Konda:"
-echo "• Logic Pro: AU Instruments → Turbeaux Sounds → Konda"
-echo "• Ableton Live: VST3 → Turbeaux Sounds → Konda"
-echo "• Other DAWs: Look for Turbeaux Sounds → Konda"
+echo "Next steps:"
+echo "1. Restart your DAW (Logic Pro, Ableton, etc.)"
+echo "2. Rescan plugins if needed"
+echo "3. Look for 'Konda' in your plugin list"
 echo ""
-echo "Please restart your DAW to see the plugin."
-echo ""
-read -p "Press Enter to close..."
+echo "Press any key to close this window..."
+read -n 1
+INSTALL_SCRIPT
 
-EOF
-
+# Make install script executable
 chmod +x dmg_temp/Install_Konda.command
 
 # Create README
-cat > dmg_temp/README.txt << 'EOF'
-Konda v1.2.0 - A Turbeaux Sounds Plugin
-=====================================
+cat > dmg_temp/README.txt << READMETEXT
+Konda ${VERSION} - Installation Instructions
+========================================
 
-INSTALLATION:
-Double-click "Install_Konda.command" to automatically install both formats.
-
-MANUAL INSTALLATION:
-1. Copy Konda.component to ~/Library/Audio/Plug-Ins/Components/
-2. Copy Konda.vst3 to ~/Library/Audio/Plug-Ins/VST3/
+QUICK INSTALL:
+1. Double-click "Install_Konda.command"
+2. Enter your password if prompted
 3. Restart your DAW
 
+That's it! The installer will:
+- Copy plugins to the correct locations
+- Fix macOS security permissions automatically
+- Install both Audio Unit (Logic Pro) and VST3 formats
+
+MANUAL INSTALL (if script doesn't work):
+1. Copy "Konda.component" to ~/Library/Audio/Plug-Ins/Components/
+2. Copy "Konda.vst3" to ~/Library/Audio/Plug-Ins/VST3/
+3. Run in Terminal:
+   xattr -cr ~/Library/Audio/Plug-Ins/Components/Konda.component
+   xattr -cr ~/Library/Audio/Plug-Ins/VST3/Konda.vst3
+
 FEATURES:
-• FFT-centered interface with large spectrum analyzer
-• Multi-colored EQ - each band displays in unique color  
+• FFT-centered interface with large spectrum analyser
+• 4-band parametric EQ with multi-coloured visualisation
 • 4-voice polyphonic synthesis
 • Built-in MIDI pattern generator
-• Real-time visual feedback
+• Multiple waveforms and filter types
 
-SYSTEM REQUIREMENTS:
-• macOS 10.13 or later
-• Intel or Apple Silicon Mac
+COMPATIBILITY:
+• Logic Pro (Audio Unit)
+• Ableton Live (VST3)
+• Studio One (VST3)
+• Reaper (VST3/AU)
 • Any AU or VST3 compatible DAW
 
 SUPPORT:
-https://github.com/deanturpin/ts
+https://github.com/deanturpin/konda
 
-Konda is part of the Turbeaux Sounds plugin suite.
-EOF
-
-# Create Applications alias for easy drag-and-drop (if we had an app)
-# For plugins, we'll create shortcuts to plugin folders instead
-
-# Create shortcuts info
-cat > dmg_temp/Plugin_Locations.txt << 'EOF'
-Plugin Installation Locations:
-
-Audio Unit Plugins:
-~/Library/Audio/Plug-Ins/Components/
-
-VST3 Plugins:
-~/Library/Audio/Plug-Ins/VST3/
-
-Use the installer script for automatic installation,
-or manually copy the plugin files to these locations.
-EOF
+© 2025 Turbeaux Sounds
+READMETEXT
 
 echo "💾 Creating disk image..."
 
-# Create the DMG
-hdiutil create -srcfolder dmg_temp -volname "Konda v${VERSION}" -fs HFS+ -fsargs "-c c=64,a=16,e=16" -format UDRW "${TEMP_DMG}"
+# Create the DMG with specific size
+hdiutil create -size 50m -fs HFS+ -volname "${VOLUME_NAME}" "${TEMP_DMG}"
 
-# Mount the DMG to customize it
-MOUNT_DIR="/Volumes/Konda v${VERSION}"
-hdiutil attach "${TEMP_DMG}"
+# Mount the DMG
+hdiutil attach "${TEMP_DMG}" -mountpoint "/Volumes/${VOLUME_NAME}"
 
-# Wait for mount
+# Copy contents to mounted DMG
+echo "📁 Copying files to disk image..."
+cp -R dmg_temp/* "/Volumes/${VOLUME_NAME}/"
+
+# Set window appearance
+echo "🎨 Setting custom layout..."
 sleep 2
 
-# Set the DMG window appearance (requires AppleScript)
-osascript << EOF
-tell application "Finder"
-    tell disk "Konda v${VERSION}"
-        open
-        set current view of container window to icon view
-        set toolbar visible of container window to false
-        set statusbar visible of container window to false
-        set the bounds of container window to {100, 100, 800, 500}
-        set viewOptions to the icon view options of container window
-        set arrangement of viewOptions to not arranged
-        set icon size of viewOptions to 80
-        set background picture of viewOptions to file ".background:background.png"
-        
-        -- Position items
-        set position of item "Install_Konda.command" of container window to {200, 200}
-        set position of item "README.txt" of container window to {500, 200}
-        set position of item "Konda.component" of container window to {200, 320}
-        set position of item "Konda.vst3" of container window to {350, 320}
-        set position of item "Plugin_Locations.txt" of container window to {500, 320}
-        
-        update without registering applications
-        delay 2
-    end tell
-end tell
-EOF
-
 # Unmount the DMG
-hdiutil detach "${MOUNT_DIR}"
+echo "📤 Ejecting disk image..."
+sleep 2
+hdiutil detach "/Volumes/${VOLUME_NAME}" -force || true
+sleep 1
 
 # Convert to compressed read-only DMG
 echo "📦 Compressing disk image..."
-hdiutil convert "${TEMP_DMG}" -format UDZO -imagekey zlib-level=9 -o "${FINAL_DMG}"
+if [ -f "${TEMP_DMG}" ]; then
+    hdiutil convert "${TEMP_DMG}" -format UDZO -imagekey zlib-level=9 -o "${FINAL_DMG}"
+else
+    echo "❌ Temporary DMG not found!"
+    exit 1
+fi
 
 # Clean up
 rm -f "${TEMP_DMG}"
 rm -rf dmg_temp
 
-# Make sure the plugins were built
-if [ ! -f "build/AudioWorkstation_artefacts/Release/AU/Konda.component/Contents/MacOS/Konda" ]; then
-    echo "❌ Plugins not found. Run 'make install' first."
-    exit 1
-fi
-
 echo "✅ Created: ${FINAL_DMG}"
 echo "📊 Size: $(du -h "${FINAL_DMG}" | cut -f1)"
 echo ""
-echo "🎉 Konda installer DMG created successfully!"
-echo "Users can now double-click the DMG and run the installer."
-
-EOF
-
-chmod +x create_dmg.sh
+echo "🎉 Installer created successfully!"
+echo "Users can now:"
+echo "1. Open the DMG"
+echo "2. Double-click 'Install_Konda.command'"
+echo "3. Start making music with Konda!"
