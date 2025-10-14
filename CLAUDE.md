@@ -626,19 +626,24 @@ if (isStandalone) {
    - **Result**: Eliminated muting warnings, enabled proper audio input
      functionality
 
-### Professional Distribution Revolution
+### Simplified Installation System
 
-- **User Request**: "can you do one of those finder things where you just have
-  to drag the plugin into the right location?"
-- **Implementation**: Industry-standard drag-and-drop DMG installer
-  (`create_drag_drop_dmg.sh`)
-- **Professional Features**:
-  - Visual layout: Plugins (left) → Destination folders (right)
-  - Symbolic links to system plugin directories
-  - AppleScript-based custom positioning
-  - Comprehensive README with installation guides
-  - Both AU and VST3 formats in single installer
-- **GitHub Release**: v1.2.2 with professional distribution system
+- **User Request**: "can we not just run a script that copies the component and fixes the settings?"
+- **Evolution**: Moved from complex drag-and-drop DMG to simple double-click installer
+- **Implementation**:
+  - `install.sh` - Local installation script for development
+  - `create_dmg.sh` - DMG creator with embedded `Install_Konda.command` script
+- **Key Innovation**: Automatic quarantine flag removal via `xattr -cr`
+- **User Experience**:
+  1. User opens DMG
+  2. Double-clicks `Install_Konda.command`
+  3. Script copies plugins and fixes macOS security permissions automatically
+  4. No manual drag-and-drop or terminal commands needed
+- **Technical Features**:
+  - Installs both AU and VST3 plugins
+  - Creates plugin directories if missing
+  - Removes Gatekeeper quarantine attributes
+  - Comprehensive README with manual installation fallback
 
 ### Development Environment Polish
 
@@ -655,8 +660,7 @@ if (isStandalone) {
 - **Color Harmony**: Red → Orange → Light Blue → Cyan (removed yellow
   complexity)
 - **Audio Foundation**: Proper microphone permissions, zero muting warnings
-- **Professional Distribution**: Drag-and-drop installer matching industry
-  standards
+- **Simplified Installation**: Double-click installer script with automatic quarantine removal
 - **MIDI Intelligence**: Device auto-selection with 7 modes × 5 melody patterns
 - **Visual Excellence**: FFT-centered interface with streamlined control layout
 
@@ -666,12 +670,12 @@ if (isStandalone) {
    maintaining professional capability
 2. **Audio System Harmony**: Resolved all input/output conflicts with proper
    system permissions
-3. **Distribution Excellence**: Professional DMG installer rivaling commercial
-   plugin standards
+3. **Installation Simplification**: One-click installer script replacing complex drag-and-drop workflow
 4. **Build System Integrity**: Unified naming and messaging throughout
    development pipeline
 5. **User Experience Refinement**: Streamlined interface reduces cognitive load
    while maintaining power
+6. **Automatic Security Handling**: Quarantine flag removal built into installation process
 
 ### Code Statistics (Final)
 
