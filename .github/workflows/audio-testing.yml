@@ -34,9 +34,20 @@ jobs:
         # Install the plugin temporarily for testing
         sudo cp -R "build/AudioWorkstation_artefacts/Release/AU/Konda.component" "/Library/Audio/Plug-Ins/Components/"
 
+        # Remove quarantine flag
+        sudo xattr -cr "/Library/Audio/Plug-Ins/Components/Konda.component"
+
+        # Reset the Audio Unit cache to recognize new plugin
+        killall -9 AudioComponentRegistrar 2>/dev/null || true
+
+        echo "Waiting for Audio Unit cache to refresh..."
+        sleep 3
+
         # Run AU validation
         auval -v aufx Kond TurS || {
           echo "❌ AU validation failed"
+          echo "Trying to list all available Audio Units..."
+          auval -a | grep -i konda || echo "Konda not found in AU list"
           exit 1
         }
 
