@@ -80,8 +80,9 @@ echo "Press any key to close this window..."
 read -n 1
 INSTALL_SCRIPT
 
-# Make install script executable
+# Make install script executable and remove quarantine
 chmod +x dmg_temp/Install_Konda.command
+xattr -c dmg_temp/Install_Konda.command 2>/dev/null || true
 
 # Create README
 cat > dmg_temp/README.txt << READMETEXT
@@ -89,16 +90,27 @@ Konda ${VERSION} - Installation Instructions
 ========================================
 
 QUICK INSTALL:
-1. Double-click "Install_Konda.command"
-2. Enter your password if prompted
-3. Restart your DAW
 
-That's it! The installer will:
+If macOS blocks "Install_Konda.command":
+1. Right-click "Install_Konda.command" and select "Open"
+2. Click "Open" in the security dialog
+3. Enter your password if prompted
+4. Restart your DAW
+
+Alternative method:
+1. Open Terminal
+2. Type: cd
+3. Drag this DMG window into Terminal (to get the path)
+4. Press Enter, then type: chmod +x Install_Konda.command && ./Install_Konda.command
+5. Enter your password if prompted
+6. Restart your DAW
+
+The installer will:
 - Copy plugins to the correct locations
 - Fix macOS security permissions automatically
 - Install both Audio Unit (Logic Pro) and VST3 formats
 
-MANUAL INSTALL (if script doesn't work):
+MANUAL INSTALL (if automated install doesn't work):
 1. Copy "Konda.component" to ~/Library/Audio/Plug-Ins/Components/
 2. Copy "Konda.vst3" to ~/Library/Audio/Plug-Ins/VST3/
 3. Run in Terminal:
