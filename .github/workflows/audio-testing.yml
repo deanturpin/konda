@@ -144,7 +144,7 @@ jobs:
           exit 1
         fi
 
-        if grep -q "parametric" AudioWorkstation/Source/*.h AudioWorkstation/Source/*.cpp; then
+        if grep -iq "parametric" AudioWorkstation/Source/*.h AudioWorkstation/Source/*.cpp; then
           echo "✅ Parametric EQ found in code"
         else
           echo "❌ Parametric EQ missing"
