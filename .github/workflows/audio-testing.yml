@@ -43,8 +43,8 @@ jobs:
         echo "Waiting for Audio Unit cache to refresh..."
         sleep 3
 
-        # Run AU validation
-        auval -v aufx Kond TurS || {
+        # Run AU validation (aumu = Audio Unit Music Instrument/Synth)
+        auval -v aumu Knda Trbo || {
           echo "❌ AU validation failed"
           echo "Trying to list all available Audio Units..."
           auval -a | grep -i konda || echo "Konda not found in AU list"
