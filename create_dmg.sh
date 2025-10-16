@@ -28,94 +28,58 @@ echo "📦 Copying Konda plugins..."
 cp -R "build/AudioWorkstation_artefacts/Release/AU/Konda.component" dmg_temp/
 cp -R "build/AudioWorkstation_artefacts/Release/VST3/Konda.vst3" dmg_temp/
 
-# Create installation script for DMG
-cat > dmg_temp/Install_Konda.command << 'INSTALL_SCRIPT'
+# Create helper script to open installation folders
+cat > dmg_temp/Open_Plugin_Folders.command << 'OPEN_SCRIPT'
 #!/bin/bash
 
-# Konda Installation Script
-# Double-click this file to install Konda plugins
-
-APP_NAME="Konda"
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Open the plugin installation folders
 AU_DEST="$HOME/Library/Audio/Plug-Ins/Components"
 VST3_DEST="$HOME/Library/Audio/Plug-Ins/VST3"
 
-echo ""
-echo "🎵 Installing ${APP_NAME}..."
-echo ""
-
-# Create plugin directories if they don't exist
+# Create directories if they don't exist
 mkdir -p "${AU_DEST}"
 mkdir -p "${VST3_DEST}"
 
-# Install Audio Unit
-if [ -d "${SCRIPT_DIR}/Konda.component" ]; then
-    echo "📦 Installing Audio Unit (Logic Pro)..."
-    cp -R "${SCRIPT_DIR}/Konda.component" "${AU_DEST}/"
-    xattr -cr "${AU_DEST}/Konda.component"
-    echo "✅ Audio Unit installed"
-else
-    echo "⚠️  Audio Unit not found"
-fi
+# Open both folders
+open "${AU_DEST}"
+open "${VST3_DEST}"
 
-# Install VST3
-if [ -d "${SCRIPT_DIR}/Konda.vst3" ]; then
-    echo "📦 Installing VST3..."
-    cp -R "${SCRIPT_DIR}/Konda.vst3" "${VST3_DEST}/"
-    xattr -cr "${VST3_DEST}/Konda.vst3"
-    echo "✅ VST3 installed"
-else
-    echo "⚠️  VST3 not found"
-fi
+echo "✅ Plugin folders opened!"
+echo "Now drag Konda.component to the Components folder"
+echo "and Konda.vst3 to the VST3 folder"
+OPEN_SCRIPT
 
-echo ""
-echo "🎉 Installation complete!"
-echo ""
-echo "Next steps:"
-echo "1. Restart your DAW (Logic Pro, Ableton, etc.)"
-echo "2. Rescan plugins if needed"
-echo "3. Look for 'Konda' in your plugin list"
-echo ""
-echo "Press any key to close this window..."
-read -n 1
-INSTALL_SCRIPT
-
-# Make install script executable and remove quarantine
-chmod +x dmg_temp/Install_Konda.command
-xattr -c dmg_temp/Install_Konda.command 2>/dev/null || true
+# Make script executable
+chmod +x dmg_temp/Open_Plugin_Folders.command
+xattr -c dmg_temp/Open_Plugin_Folders.command 2>/dev/null || true
 
 # Create README
 cat > dmg_temp/README.txt << READMETEXT
 Konda ${VERSION} - Installation Instructions
 ========================================
 
-QUICK INSTALL:
+DRAG AND DROP INSTALLATION:
 
-If macOS blocks "Install_Konda.command":
-1. Right-click "Install_Konda.command" and select "Open"
-2. Click "Open" in the security dialog
-3. Enter your password if prompted
-4. Restart your DAW
+1. Double-click "Open_Plugin_Folders.command"
+   (This opens your plugin installation folders)
 
-Alternative method:
-1. Open Terminal
-2. Type: cd
-3. Drag this DMG window into Terminal (to get the path)
-4. Press Enter, then type: chmod +x Install_Konda.command && ./Install_Konda.command
-5. Enter your password if prompted
-6. Restart your DAW
+2. Drag "Konda.component" to the Components folder
+   Drag "Konda.vst3" to the VST3 folder
 
-The installer will:
-- Copy plugins to the correct locations
-- Fix macOS security permissions automatically
-- Install both Audio Unit (Logic Pro) and VST3 formats
-
-MANUAL INSTALL (if automated install doesn't work):
-1. Copy "Konda.component" to ~/Library/Audio/Plug-Ins/Components/
-2. Copy "Konda.vst3" to ~/Library/Audio/Plug-Ins/VST3/
-3. Run in Terminal:
+3. Run this command in Terminal to fix permissions:
    xattr -cr ~/Library/Audio/Plug-Ins/Components/Konda.component
    xattr -cr ~/Library/Audio/Plug-Ins/VST3/Konda.vst3
+
+4. Restart your DAW
+
+QUICK TERMINAL INSTALL (Copy and paste all lines):
+cd ~/Library/Audio/Plug-Ins/Components
+cp -R /Volumes/Konda*/Konda.component .
+xattr -cr Konda.component
+cd ~/Library/Audio/Plug-Ins/VST3
+cp -R /Volumes/Konda*/Konda.vst3 .
+xattr -cr Konda.vst3
+echo "✅ Installation complete! Restart your DAW."
 
 FEATURES:
 • FFT-centered interface with large spectrum analyser
