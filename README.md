@@ -50,7 +50,7 @@ This installs both Audio Unit and VST3 plugins to your system.
 - Intel or Apple Silicon Mac
 - JUCE framework (auto-downloaded during build)
 
-## 🛠️ Development
+## Development
 
 ### Prerequisites
 
@@ -84,11 +84,11 @@ make help         # Show all available commands
 └── docs/               # GitHub Pages website
 ```
 
-## 🌐 Download
+## Download
 
 Pre-built binaries available at: <https://deanturpin.github.io/ts/>
 
-## 📊 Technical Details
+## Technical Details
 
 ### Build System
 
@@ -110,7 +110,7 @@ Pre-built binaries available at: <https://deanturpin.github.io/ts/>
 - **Languages**: C++ (JUCE framework)
 - **Build Time**: ~30 seconds (8 cores)
 
-## 📸 Documentation
+## Documentation
 
 ### Release Screenshots
 
