@@ -5,9 +5,10 @@
 
 set -e
 
-# Get git commit hash (short version)
-GIT_HASH=$(git rev-parse --short HEAD)
-VERSION="${GIT_HASH}"
+# Get version from git tag (latest tag)
+VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "dev")
+# Strip 'v' prefix if present
+VERSION="${VERSION#v}"
 APP_NAME="Konda"
 DMG_NAME="Konda_${VERSION}_Installer"
 TEMP_DMG="temp_${DMG_NAME}.dmg"
@@ -98,7 +99,7 @@ COMPATIBILITY:
 SUPPORT:
 https://github.com/deanturpin/konda
 
-© 2025 Turbeaux Sounds
+© 2025 Audieaux
 READMETEXT
 
 echo "💾 Creating disk image..."
