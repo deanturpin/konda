@@ -21,7 +21,44 @@ Konda is designed exclusively for **macOS** as either a **Logic Pro plugin** or 
 
 - **CMake**: `brew install cmake`
 - **JUCE Framework**: `git clone https://github.com/juce-framework/JUCE.git ~/JUCE`
-- **Xcode Command Line Tools**: `xcode-select --install`
+- **Full Xcode**: Download from Mac App Store (required for universal binary builds)
+  - Command Line Tools alone are insufficient
+  - Must switch to Xcode: `sudo xcode-select -s /Applications/Xcode.app/Contents/Developer`
+
+## macOS Audio Unit Requirements (CRITICAL)
+
+**For Logic Pro compatibility on macOS Sequoia (15.6+):**
+
+1. ✅ **Universal Binary Required** - MUST build for both x86_64 and arm64
+   - CMakeLists.txt includes: `set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64")`
+   - Logic Pro rejects single-architecture plugins
+   - Verify: `file ~/Library/Audio/Plug-Ins/Components/Konda.component/Contents/MacOS/Konda`
+
+2. ✅ **Full Xcode Toolchain** - Command Line Tools insufficient
+   - Switch to Xcode: `sudo xcode-select -s /Applications/Xcode.app/Contents/Developer`
+   - Verify: `xcode-select -p` should show `/Applications/Xcode.app/Contents/Developer`
+
+3. ✅ **Code Signing** - Ad-hoc signing sufficient for local development
+   - No certificate needed
+   - Automatic via CMake post-build commands
+   - Verify: `codesign -dvv ~/Library/Audio/Plug-Ins/Components/Konda.component`
+
+4. ⚠️ **Plugin Scan Conflicts** - Crashing plugins block others
+   - Disable problematic plugins: `mv Plugin.component Plugin.component.disabled`
+   - Test all plugins load: `auval -a`
+   - Clear AU cache after changes: `rm -rf ~/Library/Caches/AudioUnitCache`
+
+**What Actually Worked:**
+
+- ✅ Universal binary (x86_64 + arm64)
+- ✅ Xcode toolchain
+- ✅ Ad-hoc code signing (`codesign -s -`)
+
+**What Was NOT Required:**
+
+- ❌ Custom code signing certificate
+- ❌ Notarization
+- ❌ Complex entitlements
 
 ## Project Architecture
 

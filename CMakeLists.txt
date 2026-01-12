@@ -6,6 +6,11 @@ project(SineSynth VERSION 1.0.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Build universal binary for macOS (Intel + Apple Silicon)
+if(APPLE)
+    set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64" CACHE STRING "Build architectures for Mac OS X" FORCE)
+endif()
+
 # Find JUCE - adjust path as needed
 # find_package(PkgConfig REQUIRED)  # Not needed for JUCE
 
@@ -165,10 +170,10 @@ target_compile_definitions(ParametricEQ PUBLIC
 
 # Create integrated Audio Workstation
 juce_add_plugin(AudioWorkstation
-    COMPANY_NAME ""
+    COMPANY_NAME "Audieaux"
     PLUGIN_MANUFACTURER_CODE Trbo
     PLUGIN_CODE Knda
-    FORMATS AU VST3 Standalone
+    FORMATS AU AUv3 VST3 Standalone
     PRODUCT_NAME "Konda"
     BUNDLE_ID com.turbeaux.konda
     IS_SYNTH TRUE
@@ -181,6 +186,18 @@ juce_add_plugin(AudioWorkstation
     DESCRIPTION "FFT-Centered Synthesizer with Multi-Colored EQ Visualization by Turbeaux Sounds"
     PLUGIN_CHARACTERISTICS "Instrument;Multi-Timbral"
 )
+
+# Code signing for macOS (ad-hoc is sufficient for local development)
+if(APPLE)
+    add_custom_command(TARGET AudioWorkstation_AU POST_BUILD
+        COMMAND codesign --force --sign - --deep "$<TARGET_BUNDLE_DIR:AudioWorkstation_AU>"
+        COMMENT "Ad-hoc code signing Audio Unit"
+    )
+    add_custom_command(TARGET AudioWorkstation_VST3 POST_BUILD
+        COMMAND codesign --force --sign - --deep "$<TARGET_BUNDLE_DIR:AudioWorkstation_VST3>"
+        COMMENT "Ad-hoc code signing VST3"
+    )
+endif()
 
 target_sources(AudioWorkstation PRIVATE
     AudioWorkstation/Source/WorkstationProcessor.cpp
